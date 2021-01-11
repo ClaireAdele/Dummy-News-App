@@ -1,1 +1,9 @@
-// extract any functions you are using to manipulate your data, into this file
+exports.updateDate = ((articlesArray) => {
+    return articlesArray.map((article) => {
+        let newDate = new Date(article.created_at);
+        article.created_at = newDate;
+        return article;
+    });
+})
+
+//lookup usernames
