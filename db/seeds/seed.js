@@ -5,7 +5,7 @@ const {
   userData,
 } = require('../data/index.js');
 
-const {updateDate} = require('../utils/data-manipulation')
+const {updateDate,deleteVotes,lookUp,modCommentsData} = require('../utils/data-manipulation')
 
 exports.seed = function (knex) {
   return knex
@@ -25,13 +25,22 @@ exports.seed = function (knex) {
     .returning('*')
   }).then((insertedUsers) => {
     const updatedArticles = updateDate(articleData)
-    console.log(updatedArticles)
     return knex
     .insert(updatedArticles)
     .into('articles')
     .returning('*')
-    .then((insertedArticles) => {
-      console.log(insertedArticles)
-    });
+    }).then((insertedArticles) => {
+
+      const lookUpData = lookUp(insertedArticles)
+      const updatedTimestampComments = updateDate(commentData)
+      const withDeletedVotes = deleteVotes(updatedTimestampComments)
+      const updatedComments = modCommentsData(withDeletedVotes,lookUpData)
+
+      return knex
+      .insert(updatedComments)
+      .into("comments")
+      .returning("*")
+    }).then(comments=>{
+      console.log(comments)
   })
 };

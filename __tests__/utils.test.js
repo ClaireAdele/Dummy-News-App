@@ -1,4 +1,4 @@
-const {updateDate} = require('../db/utils/data-manipulation')
+const {updateDate,deleteVotes,lookUp,modCommentsData} = require('../db/utils/data-manipulation')
 
 describe('updateDate', () => {
     test('returns an empty array when passed with an empty array', () => {
@@ -87,3 +87,162 @@ describe('updateDate', () => {
         expect(updateDate(arrayArticles)).toEqual(updatedArticles);
     });
 })
+
+  describe('deleteVotes', () => {
+    test('should return an empty array when passed and empty array', () => {
+      expect(deleteVotes([])).toEqual([])
+    });
+    test('should return an modified array of object "-" the votes property', () => {
+      expect(deleteVotes([{
+    body: 'Itaque quisquam est similique et est perspiciatis reprehenderit voluptatem autem. Voluptatem accusantium eius error adipisci quibusdam doloribus.',
+    belongs_to: 'The People Tracking Every Touch, Pass And Tackle in the World Cup',
+    created_by: 'tickle122',
+    votes: -1,
+    created_at: 1468087638932,
+  }])).toEqual([{
+    body: 'Itaque quisquam est similique et est perspiciatis reprehenderit voluptatem autem. Voluptatem accusantium eius error adipisci quibusdam doloribus.',
+    belongs_to: 'The People Tracking Every Touch, Pass And Tackle in the World Cup',
+    created_by: 'tickle122',
+    created_at: 1468087638932,
+  }])
+    });
+    test('should return an modified array of multiple object "-" the votes property', () => {
+      const input = [{
+    body: 'Itaque quisquam est similique et est perspiciatis reprehenderit voluptatem autem. Voluptatem accusantium eius error adipisci quibusdam doloribus.',
+    belongs_to: 'The People Tracking Every Touch, Pass And Tackle in the World Cup',
+    created_by: 'tickle122',
+    votes: -1,
+    created_at: 1468087638932,
+  },
+  {
+    body: 'Nobis consequatur animi. Ullam nobis quaerat voluptates veniam.',
+    belongs_to: 'Making sense of Redux',
+    created_by: 'grumpy19',
+    votes: 7,
+    created_at: 1478813209256,
+  },
+  {
+    body: 'Qui sunt sit voluptas repellendus sed. Voluptatem et repellat fugiat. Rerum doloribus eveniet quidem vero aut sint officiis. Dolor facere et et architecto vero qui et perferendis dolorem. Magni quis ratione adipisci error assumenda ut. Id rerum eos facere sit nihil ipsam officia aspernatur odio.',
+    belongs_to: '22 Amazing open source React projects',
+    created_by: 'grumpy19',
+    votes: 3,
+    created_at: 1504183900263,
+  }]
+      const expected = [{
+    body: 'Itaque quisquam est similique et est perspiciatis reprehenderit voluptatem autem. Voluptatem accusantium eius error adipisci quibusdam doloribus.',
+    belongs_to: 'The People Tracking Every Touch, Pass And Tackle in the World Cup',
+    created_by: 'tickle122',
+    created_at: 1468087638932,
+  },
+  {
+    body: 'Nobis consequatur animi. Ullam nobis quaerat voluptates veniam.',
+    belongs_to: 'Making sense of Redux',
+    created_by: 'grumpy19',
+    created_at: 1478813209256,
+  },
+  {
+    body: 'Qui sunt sit voluptas repellendus sed. Voluptatem et repellat fugiat. Rerum doloribus eveniet quidem vero aut sint officiis. Dolor facere et et architecto vero qui et perferendis dolorem. Magni quis ratione adipisci error assumenda ut. Id rerum eos facere sit nihil ipsam officia aspernatur odio.',
+    belongs_to: '22 Amazing open source React projects',
+    created_by: 'grumpy19',
+    created_at: 1504183900263,
+  }]
+
+  expect(deleteVotes(input)).toEqual(expected)
+    });
+
+describe('lookUp', () => {
+  test(' return an empty obj when passed and empty array', () => {
+    expect(lookUp([])).toEqual({})
+  });
+  test('return a new obj with the title and article_id key value pair', () => {
+    const data  = lookUp([{
+    article_id: 1,
+    title: 'Running a Node App',
+    body: 'This is part two of a series on how to get up and running with Systemd and Node.js. This part dives deeper into how to successfully run your app with systemd long-term, and how to set it up in a production environment.',
+    votes: 0,
+    topic: 'coding',
+    author: 'jessjelly',
+  
+  }])
+    expect(data).toEqual({'Running a Node App':1})
+  });
+  test('return a new obj with the title and article_id key value pair', () => {
+    const data  = lookUp([{
+    article_id: 1,
+    title: 'Running a Node App',
+    body: 'This is part two of a series on how to get up and running with Systemd and Node.js. This part dives deeper into how to successfully run your app with systemd long-term, and how to set it up in a production environment.',
+    votes: 0,
+    topic: 'coding',
+    author: 'jessjelly',
+  
+  },  {
+    article_id: 28,
+    title: 'High Altitude Cooking',
+    body: 'Most backpacking trails vary only a few thousand feet elevation. However, many trails can be found above 10,000 feet. But what many people don’t take into consideration at these high altitudes is how these elevations affect their cooking.',
+    votes: 0,
+    topic: 'cooking',
+    author: 'happyamy2016',
+  }])
+    expect(data).toEqual({'Running a Node App':1,'High Altitude Cooking':28})
+  });
+
+});
+  describe('modCommentsData', () => {
+    test('should return an empty array  when passed and empty array', () => {
+      expect(modCommentsData([],{})).toEqual([])
+    });
+    test('should return a new array of a modified  comment with a article_id property', () => {
+      const input_1 = [{
+    body: 'Itaque quisquam est similique et est perspiciatis reprehenderit voluptatem autem. Voluptatem accusantium eius error adipisci quibusdam doloribus.',
+    belongs_to: 'Running a Node App',
+    created_by: 'tickle122',
+    votes: -1,
+    created_at: 1468087638932,
+  }]
+      const input_2 =  {'Running a Node App': 1}
+      const expected =[{
+    body: 'Itaque quisquam est similique et est perspiciatis reprehenderit voluptatem autem. Voluptatem accusantium eius error adipisci quibusdam doloribus.',
+    article_id : 1,
+    created_by: 'tickle122',
+    votes: -1,
+    created_at: 1468087638932,
+  }]
+    expect(modCommentsData(input_1,input_2)).toEqual(expected)
+    });
+  test('should return a new array of a modified  comments with a article_id property', () => {
+    const input_1 = [{
+    body: 'Itaque quisquam est similique et est perspiciatis reprehenderit voluptatem autem. Voluptatem accusantium eius error adipisci quibusdam doloribus.',
+    belongs_to: 'The People Tracking Every Touch, Pass And Tackle in the World Cup',
+    created_by: 'tickle122',
+    votes: -1,
+    created_at: 1468087638932,
+  },
+  {
+    body: 'Nobis consequatur animi. Ullam nobis quaerat voluptates veniam.',
+    belongs_to: 'Making sense of Redux',
+    created_by: 'grumpy19',
+    votes: 7,
+    created_at: 1478813209256,
+  }]
+    const input_2 = {'The People Tracking Every Touch, Pass And Tackle in the World Cup':1,'Making sense of Redux':2}
+
+    const expected = [{
+    body: 'Itaque quisquam est similique et est perspiciatis reprehenderit voluptatem autem. Voluptatem accusantium eius error adipisci quibusdam doloribus.',
+    article_id : 1,
+    created_by: 'tickle122',
+    votes: -1,
+    created_at: 1468087638932,
+  },
+  {
+    body: 'Nobis consequatur animi. Ullam nobis quaerat voluptates veniam.',
+    article_id : 2,
+    created_by: 'grumpy19',
+    votes: 7,
+    created_at: 1478813209256,
+  }]
+
+  expect(modCommentsData(input_1,input_2)).toEqual(expected)
+  });
+  });
+
+});
