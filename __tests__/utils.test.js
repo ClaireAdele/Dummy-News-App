@@ -152,7 +152,7 @@ describe('updateDate', () => {
 
 describe('lookUp', () => {
   test(' return an empty obj when passed and empty array', () => {
-    expect(lookUp([])).toEqual({})
+    expect(lookUp([],"title","article_id")).toEqual({})
   });
   test('return a new obj with the title and article_id key value pair', () => {
     const data  = lookUp([{
@@ -163,7 +163,7 @@ describe('lookUp', () => {
     topic: 'coding',
     author: 'jessjelly',
   
-  }])
+  }],"title","article_id")
     expect(data).toEqual({'Running a Node App':1})
   });
   test('return a new obj with the title and article_id key value pair', () => {
@@ -182,7 +182,7 @@ describe('lookUp', () => {
     votes: 0,
     topic: 'cooking',
     author: 'happyamy2016',
-  }])
+  }],"title","article_id")
     expect(data).toEqual({'Running a Node App':1,'High Altitude Cooking':28})
   });
 
@@ -203,7 +203,7 @@ describe('lookUp', () => {
       const expected =[{
     body: 'Itaque quisquam est similique et est perspiciatis reprehenderit voluptatem autem. Voluptatem accusantium eius error adipisci quibusdam doloribus.',
     article_id : 1,
-    created_by: 'tickle122',
+    author: 'tickle122',
     votes: -1,
     created_at: 1468087638932,
   }]
@@ -229,14 +229,14 @@ describe('lookUp', () => {
     const expected = [{
     body: 'Itaque quisquam est similique et est perspiciatis reprehenderit voluptatem autem. Voluptatem accusantium eius error adipisci quibusdam doloribus.',
     article_id : 1,
-    created_by: 'tickle122',
+    author: 'tickle122',
     votes: -1,
     created_at: 1468087638932,
   },
   {
     body: 'Nobis consequatur animi. Ullam nobis quaerat voluptates veniam.',
     article_id : 2,
-    created_by: 'grumpy19',
+    author: 'grumpy19',
     votes: 7,
     created_at: 1478813209256,
   }]

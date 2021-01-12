@@ -31,16 +31,14 @@ exports.seed = function (knex) {
     .returning('*')
     }).then((insertedArticles) => {
 
-      const lookUpData = lookUp(insertedArticles)
+      const lookUpArticle = lookUp(insertedArticles,"title","article_id")
       const updatedTimestampComments = updateDate(commentData)
       const withDeletedVotes = deleteVotes(updatedTimestampComments)
-      const updatedComments = modCommentsData(withDeletedVotes,lookUpData)
-
+      const updatedComments = modCommentsData(withDeletedVotes,lookUpArticle)
       return knex
       .insert(updatedComments)
       .into("comments")
       .returning("*")
     }).then(comments=>{
-      console.log(comments)
   })
 };
