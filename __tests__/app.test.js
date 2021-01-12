@@ -23,10 +23,26 @@ describe('/api', () => {
         });
     });
 
+    describe('/api/users', () => {
+        test('GET - status 200 - get a user object with the following properties: username, avatar_url, name', () => {
+            return request(app)
+            .get('/api/users/butter_bridge')
+            .expect(200)
+            .then(({body}) => {
+                expect(body.user).toEqual(
+                    [{"avatar_url": "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg",
+                    "name": "jonny", 
+                    "username": "butter_bridge"}])
+            })
+        })
+    })
+
     afterAll(() => {
         return connection.destroy();
      });
 })
+
+
 
 describe('/not-a-route', () => {
     test('ERROR - status 404 - if a user inputs a url that does not correspond to en endpoint', () => {
