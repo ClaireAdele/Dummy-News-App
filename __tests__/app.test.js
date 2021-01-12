@@ -37,6 +37,19 @@ describe('/api', () => {
         })
     })
 
+    
+    describe('/api/articles', () => {
+        test('GET - status 200 - get an article object corresponding to the article_id in parameters', () => {
+            return request(app)
+            .get('/api/articles/1')
+            .expect(200)
+            .then(({body}) => {
+                console.log(body.articles)
+            })
+        })
+    })
+
+
     afterAll(() => {
         return connection.destroy();
      });

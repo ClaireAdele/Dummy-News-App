@@ -10,9 +10,3 @@ exports.fetchUserByUsername = (username) => {
     })
 }
 
-// GET /api/users/:username
-// Responds with
-// a user object which should have the following properties:
-// username
-// avatar_url
-// name

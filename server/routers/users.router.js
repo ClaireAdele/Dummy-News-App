@@ -5,7 +5,7 @@ const {getUserByUsername} = require('../controllers/users.controllers.js')
 usersRouter.use('/:username', getUserByUsername);
 
 usersRouter.get('/', (req, res, next) => {
-    res.send('users router working');
+    res.send({message : 'users router working'});
 });
 
 module.exports = usersRouter;
