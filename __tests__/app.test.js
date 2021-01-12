@@ -33,9 +33,9 @@ describe('/api', () => {
                     [{"avatar_url": "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg",
                     "name": "jonny", 
                     "username": "butter_bridge"}])
-            })
-        })
-    })
+            });
+        });
+    });
 
     
     describe('/api/articles', () => {
@@ -44,16 +44,38 @@ describe('/api', () => {
             .get('/api/articles/1')
             .expect(200)
             .then(({body}) => {
-                console.log(body.articles)
-            })
-        })
-    })
+                expect(body.article.length).toBe(1);
+                expect(body.article[0]).toEqual(expect.objectContaining({
+                    author : expect.any(String),
+                    title : expect.any(String),
+                    article_id : expect.any(Number),
+                    body : expect.any(String),
+                    topic : expect.any(String),
+                    created_at :expect.any(String),
+                    votes : expect.any(Number),
+                    comments_count : expect.any(Number)
+                }));
+                // expect(body.article).toEqual(
+                //     {
+                //       article_id: 1,
+                //       title: 'Living in the shadow of a great man',
+                //       body: 'I find this existence challenging',
+                //       votes: 100,
+                //       topic: 'mitch',
+                //       author: 'butter_bridge',
+                //       created_at: 2018-11-15T12:21:54.171Z,
+                //       comments_count: '13'
+                //     }
+                //   )
+            });
+        });
+    });
 
 
     afterAll(() => {
         return connection.destroy();
      });
-})
+});
 
 
 
@@ -64,13 +86,10 @@ describe('/not-a-route', () => {
         .expect(404)
         .then(({body}) => {
             expect(body.message).toBe('Not Found');
-        })
+        });
     });
 
     afterAll(() => {
         return connection.destroy();
      });
-})
-
-
-
+});
