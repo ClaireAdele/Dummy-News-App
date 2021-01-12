@@ -23,16 +23,6 @@ describe('/api', () => {
         });
     });
 
-    // test('ERROR GET METHOD - status 400 - bad request, user inccorect input', () => { 
-    //     return request(app)
-    //     .get('/api/topics')
-    //     .expect(400)
-    //     .then((response) => {
-    //         console.log(response.body);
-    //     })
-        
-    // });
-
     afterAll(() => {
         return connection.destroy();
      });
