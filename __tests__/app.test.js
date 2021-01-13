@@ -3,11 +3,10 @@ const app = require('../app.js');
 const request = require('supertest');
 const connection = require('../connection.js')
 
+beforeEach(( ) => connection.seed.run());
 
 describe('/api', () => {
     describe('api/topics', () => {
-
-        beforeEach(( ) => connection.seed.run());
 
         test('GET - status 200 - gets the array of all topics, within an object, at a key of topics', () => {
             return request(app)
@@ -30,9 +29,9 @@ describe('/api', () => {
             .expect(200)
             .then(({body}) => {
                 expect(body.user).toEqual(
-                    [{"avatar_url": "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg",
+                    {"avatar_url": "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg",
                     "name": "jonny", 
-                    "username": "butter_bridge"}])
+                    "username": "butter_bridge"})
             });
         });
     });
@@ -75,18 +74,18 @@ describe('/api', () => {
         test('PATCH - status 201 - accepts a body formatted { inc_votes : number }, and increments the vote property of the article selected by the number specified', () => {
             const incrementVote = { inc_votes : 1}
             return request(app)
-            .patch('/api/articles/2')
+            .patch('/api/articles/1')
             .send(incrementVote)
             .expect(201)
             .then((patchedArticle) => {
                 expect(patchedArticle.body).toEqual(expect.objectContaining({
                     author : expect.any(String),
                     title : expect.any(String),
-                    article_id : 2,
+                    article_id : 1,
                     body : expect.any(String),
                     topic : expect.any(String),
                     created_at :expect.any(String),
-                    votes : 1,
+                    votes : 101,
                 }))
             });
         });
@@ -112,11 +111,6 @@ describe('/api', () => {
                 );
             });
         });
-
-
-        afterAll(() => {
-        return connection.destroy();
-        });
     });
 });
 
@@ -129,8 +123,8 @@ describe('/not-a-route', () => {
             expect(body.message).toBe('Not Found');
         });
     });
-
-    afterAll(() => {
-        return connection.destroy();
-     });
 });
+
+afterAll(() => {
+    return connection.destroy();
+ });

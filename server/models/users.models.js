@@ -5,7 +5,7 @@ exports.fetchUserByUsername = (username) => {
     .select('*')
     .from('users')
     .where('username', '=', username)
-    .then((user) => {
+    .then(([user]) => {
         return user;
     })
 }
