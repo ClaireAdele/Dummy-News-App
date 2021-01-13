@@ -67,8 +67,9 @@ describe('/api', () => {
             .get('/api/articles/109')
             .expect(404)
             .then((errorMessage) => {
-                expect(errorMessage.text).toEqual("{\"msg\":\"Not Found - article_id does not exist in database\"}")
-            })
+                expect(errorMessage.text).toEqual(  
+                    "{\"msg\":\"Not Found - article_id does not exist in database\"}")
+            });
         });
 
         test('ERROR DELETE - Invalid parametric endpoint input, the path is correct, but the input does not correspond to anything in the database', () => {
@@ -76,15 +77,17 @@ describe('/api', () => {
             .delete('/api/articles/109')
             .expect(404)
             .then((errorMessage) => {
-                expect(errorMessage.text).toEqual("{\"msg\":\"Not Found - article_id does not exist in database\"}")
-            })
+                expect(errorMessage.text).toEqual(
+                    "{\"msg\":\"Not Found - can't delete article if article_id does not exist in database\"}"    
+                );
+            });
+        });
+
+
+        afterAll(() => {
+        return connection.destroy();
         });
     });
-
-
-    afterAll(() => {
-        return connection.destroy();
-     });
 });
 
 describe('/not-a-route', () => {

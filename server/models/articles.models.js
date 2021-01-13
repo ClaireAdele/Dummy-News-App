@@ -34,7 +34,6 @@ exports.removeArticlesByID = (article_id) => {
         .del()
         .where('article_id', '=', article_id)
         } else {
-            console.log(article)
             return article;
         }
     });
