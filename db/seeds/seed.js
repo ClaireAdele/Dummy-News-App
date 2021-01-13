@@ -29,16 +29,14 @@ exports.seed = function (knex) {
     .insert(updatedArticles)
     .into('articles')
     .returning('*')
-    }).then((insertedArticles) => {
-
-      const lookUpArticle = lookUp(insertedArticles,"title","article_id")
-      const updatedTimestampComments = updateDate(commentData)
-      const withDeletedVotes = deleteVotes(updatedTimestampComments)
-      const updatedComments = modCommentsData(withDeletedVotes,lookUpArticle)
+  }).then((insertedArticles) => {
+      const lookUpArticle = lookUp(insertedArticles,"title","article_id");
+      const updatedTimestampComments = updateDate(commentData);
+      const withDeletedVotes = deleteVotes(updatedTimestampComments);
+      const updatedComments = modCommentsData(withDeletedVotes,lookUpArticle);
       return knex
       .insert(updatedComments)
       .into("comments")
       .returning("*")
-    }).then(comments=>{
   })
 };

@@ -56,9 +56,24 @@ describe('/api', () => {
             });
         });
 
-        test('ERROR - Invalid parametric endpoint input, the path is correct, but the input does not correspond to anything in the database', () => {
+        test('DELETE - status 204 - deletes the article and associated comments at parametric endpoint specified', () => {
+            return request(app)
+            .delete('/api/articles/1')
+            .expect(204);
+        });
+
+        test('ERROR GET - Invalid parametric endpoint input, the path is correct, but the input does not correspond to anything in the database', () => {
             return request(app)
             .get('/api/articles/109')
+            .expect(404)
+            .then((errorMessage) => {
+                expect(errorMessage.text).toEqual("{\"msg\":\"Not Found - article_id does not exist in database\"}")
+            })
+        });
+
+        test('ERROR DELETE - Invalid parametric endpoint input, the path is correct, but the input does not correspond to anything in the database', () => {
+            return request(app)
+            .delete('/api/articles/109')
             .expect(404)
             .then((errorMessage) => {
                 expect(errorMessage.text).toEqual("{\"msg\":\"Not Found - article_id does not exist in database\"}")

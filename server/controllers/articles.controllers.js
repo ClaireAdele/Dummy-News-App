@@ -11,3 +11,16 @@ exports.getArticleByID = (req, res, next) => {
         next(err);
     });
 }
+
+exports.deleteArticleByID = () => {
+    const {article_id} = req.params;
+    removeArticlesByID(article_id).then((article) => {
+        if(!article) {
+            return Promise.reject({status : 404, msg : 'Not Found - can\'t delete article if article_id does not exist in database'})
+        }
+        res.sendStatus(204);
+    }).catch((err) => {
+        console.log(err)
+        next(err);
+    });
+}

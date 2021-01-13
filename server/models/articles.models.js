@@ -1,17 +1,5 @@
 const connection = require('../../connection.js');
 
-// const fetchCommentCount = (article) => {
-//     return connection
-//     .select('*')
-//     .from('comments')
-//     .where('article_id', '=', article.article_id)
-//     .then((comments) => {
-//         console.log(comments.length)
-//         return comments.length;
-//     })
-// }
-// I had a problem with this method since the promise remained pending, then I figured out I could use Promise.all so that any asynchronous queries would resolve before sending response.
-
 exports.fetchArticlesByID = (article_id) => {
     return connection
     .first('*') //same as select, except gives first element that it finds
@@ -34,4 +22,20 @@ exports.fetchArticlesByID = (article_id) => {
         return article;
     })
 };
-     
+
+exports.removeArticlesByID = (article_id) => {
+    return connection
+    .first('*') //same as select, except gives first element that it finds
+    .from('articles')
+    .where('article_id', '=', article_id)
+    .then((article) => {
+        if(article) {
+        return connection('articles')
+        .del()
+        .where('article_id', '=', article_id)
+        } else {
+            console.log(article)
+            return article;
+        }
+    });
+};
