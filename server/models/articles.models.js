@@ -14,7 +14,7 @@ const connection = require('../../connection.js');
 
 exports.fetchArticlesByID = (article_id) => {
     return connection
-    .select('*')
+    .first('*') //same as select, except gives first element that it finds
     .from('articles')
     .where('article_id', '=', article_id)
     .then((article) => {
@@ -27,8 +27,10 @@ exports.fetchArticlesByID = (article_id) => {
             article
             ]);
     }).then(([comments, article]) => {
-        const countComments = comments.length;
-        article[0].comments_count = countComments;
+        if(article) {
+            const countComments = comments.length;
+            article.comments_count = countComments;
+        } 
         return article;
     })
 };

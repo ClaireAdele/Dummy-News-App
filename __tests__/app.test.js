@@ -36,7 +36,6 @@ describe('/api', () => {
             });
         });
     });
-
     
     describe('/api/articles', () => {
         test('GET - status 200 - get an article object corresponding to the article_id in parameters', () => {
@@ -44,30 +43,26 @@ describe('/api', () => {
             .get('/api/articles/1')
             .expect(200)
             .then(({body}) => {
-                expect(body.article.length).toBe(1);
-                expect(body.article[0]).toEqual(expect.objectContaining({
+                expect(body.article).toEqual(expect.objectContaining({
                     author : expect.any(String),
                     title : expect.any(String),
-                    article_id : expect.any(Number),
+                    article_id : 1,
                     body : expect.any(String),
                     topic : expect.any(String),
                     created_at :expect.any(String),
                     votes : expect.any(Number),
                     comments_count : expect.any(Number)
                 }));
-                // expect(body.article).toEqual(
-                //     {
-                //       article_id: 1,
-                //       title: 'Living in the shadow of a great man',
-                //       body: 'I find this existence challenging',
-                //       votes: 100,
-                //       topic: 'mitch',
-                //       author: 'butter_bridge',
-                //       created_at: 2018-11-15T12:21:54.171Z,
-                //       comments_count: '13'
-                //     }
-                //   )
             });
+        });
+
+        test('ERROR - Invalid parametric endpoint input, the path is correct, but the input does not correspond to anything in the database', () => {
+            return request(app)
+            .get('/api/articles/109')
+            .expect(404)
+            .then((errorMessage) => {
+                expect(errorMessage.text).toEqual("{\"msg\":\"Not Found - article_id does not exist in database\"}")
+            })
         });
     });
 
@@ -76,8 +71,6 @@ describe('/api', () => {
         return connection.destroy();
      });
 });
-
-
 
 describe('/not-a-route', () => {
     test('ERROR - status 404 - if a user inputs a url that does not correspond to en endpoint', () => {
