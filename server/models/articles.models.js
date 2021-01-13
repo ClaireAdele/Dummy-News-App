@@ -46,6 +46,9 @@ exports.modifyArticleByID = (article_id, inc_votes) => {
     .where('article_id', '=', article_id)
     .then((article) => {
         if(article) {
+            // if(!inc_votes) {
+            //     return null;
+            // }
         article.votes = (article.votes) + inc_votes;
         }
         return article

@@ -111,6 +111,18 @@ describe('/api', () => {
                 );
             });
         });
+
+        test('ERROR PATCH - status 400 Bad Request - the body on the request is not formatted properly, and thus, can\'t patch the article object', () => {
+            const wrongReq = { 'wrong input' : 'is not going to work'}
+            return request(app)
+            .patch('/api/articles/1')
+            .send(wrongReq)
+            .expect(400)
+            .then((errorMessage) => {
+                expect(errorMessage.body).toEqual(
+                { "msg": "Incorrect request - request must be formatted to conform to following model : {inc_votes : vote_number}" })
+            })
+        });
     });
 });
 

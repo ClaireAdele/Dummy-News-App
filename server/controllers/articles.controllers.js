@@ -29,6 +29,9 @@ exports.patchArticleByID = (req, res, next) => {
     const { inc_votes } = req.body;
     modifyArticleByID(article_id, inc_votes).then(
     (article) => {
+        if(!article.votes){
+            return Promise.reject({status : 400, msg : 'Incorrect request - request must be formatted to conform to following model : {inc_votes : vote_number}'});
+        }
         if(!article) {
             return Promise.reject({status : 404, msg : 'Not Found - can\'t patch article if article_id does not exist in database'})
         }

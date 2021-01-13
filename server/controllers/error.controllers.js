@@ -4,7 +4,7 @@ exports.handlePSQLErrors = (err, req, res, next) => {
     } else next(err)
 }
 
-exports.handlesInvalidParamInput = (err, req, res, next) => {
+exports.handlesInvalidInput = (err, req, res, next) => {
     if(err.status && err.msg) {
         res.status(err.status).send({msg: err.msg});
     } else {
