@@ -73,7 +73,22 @@ describe('/api', () => {
         });
 
         test('PATCH - status 201 - accepts a body formatted { inc_votes : number }, and increments the vote property of the article selected by the number specified', () => {
-            
+            const incrementVote = { inc_votes : 1}
+            return request(app)
+            .patch('/api/articles/2')
+            .send(incrementVote)
+            .expect(201)
+            .then((patchedArticle) => {
+                expect(patchedArticle.body).toEqual(expect.objectContaining({
+                    author : expect.any(String),
+                    title : expect.any(String),
+                    article_id : 2,
+                    body : expect.any(String),
+                    topic : expect.any(String),
+                    created_at :expect.any(String),
+                    votes : 1,
+                }))
+            });
         });
 
         test('ERROR GET - Invalid parametric endpoint input, the path is correct, but the input does not correspond to anything in the database', () => {
@@ -81,8 +96,9 @@ describe('/api', () => {
             .get('/api/articles/109')
             .expect(404)
             .then((errorMessage) => {
-                expect(errorMessage.text).toEqual(  
-                    "{\"msg\":\"Not Found - article_id does not exist in database\"}")
+                expect(errorMessage.body).toEqual(  
+                    {"msg": "Not Found - article_id does not exist in database"}
+                );
             });
         });
 
@@ -91,8 +107,8 @@ describe('/api', () => {
             .delete('/api/articles/109')
             .expect(404)
             .then((errorMessage) => {
-                expect(errorMessage.text).toEqual(
-                    "{\"msg\":\"Not Found - can't delete article if article_id does not exist in database\"}"    
+                expect(errorMessage.body).toEqual(
+                    {"msg": "Not Found - can't delete article if article_id does not exist in database"} 
                 );
             });
         });

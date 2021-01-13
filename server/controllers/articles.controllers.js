@@ -25,14 +25,14 @@ exports.deleteArticleByID = (req, res, next) => {
 }
 
 exports.patchArticleByID = (req, res, next) => {
-    const {article_id} = req.params;
-    const {body} = req.body;
-    console.log(body)
-    modifyArticleByID(article_id, body).then((article) => {
+    const { article_id } = req.params;
+    const { inc_votes } = req.body;
+    modifyArticleByID(article_id, inc_votes).then(
+    (article) => {
         if(!article) {
             return Promise.reject({status : 404, msg : 'Not Found - can\'t patch article if article_id does not exist in database'})
         }
-        res.sendStatus(204);
+        res.status(201).send(article);
     }).catch((err) => {
         next(err);
     });

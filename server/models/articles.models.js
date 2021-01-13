@@ -39,14 +39,14 @@ exports.removeArticleByID = (article_id) => {
     });
 };
 
-exports.modifyArticleByID = (article_id, inc_vote) => {
+exports.modifyArticleByID = (article_id, inc_votes) => {
     return connection
     .first('*') 
     .from('articles')
     .where('article_id', '=', article_id)
     .then((article) => {
         if(article) {
-        article.votes = (article.votes) - inc_vote;
+        article.votes = (article.votes) + inc_votes;
         }
         return article
     })
