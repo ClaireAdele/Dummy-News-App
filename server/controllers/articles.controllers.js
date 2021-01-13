@@ -1,8 +1,8 @@
-const {fetchArticlesByID, removeArticlesByID} = require('../models/articles.models.js')
+const {fetchArticleByID, removeArticleByID, modifyArticleByID} = require('../models/articles.models.js')
 
 exports.getArticleByID = (req, res, next) => {
     const {article_id} = req.params;
-    fetchArticlesByID(article_id).then((article) => {
+    fetchArticleByID(article_id).then((article) => {
         if(!article) {
             return Promise.reject({status : 404, msg : 'Not Found - article_id does not exist in database'})
         }
@@ -14,9 +14,23 @@ exports.getArticleByID = (req, res, next) => {
 
 exports.deleteArticleByID = (req, res, next) => {
     const {article_id} = req.params;
-    removeArticlesByID(article_id).then((article) => {
+    removeArticleByID(article_id).then((article) => {
         if(!article) {
             return Promise.reject({status : 404, msg : 'Not Found - can\'t delete article if article_id does not exist in database'})
+        }
+        res.sendStatus(204);
+    }).catch((err) => {
+        next(err);
+    });
+}
+
+exports.patchArticleByID = (req, res, next) => {
+    const {article_id} = req.params;
+    const {body} = req.body;
+    console.log(body)
+    modifyArticleByID(article_id, body).then((article) => {
+        if(!article) {
+            return Promise.reject({status : 404, msg : 'Not Found - can\'t patch article if article_id does not exist in database'})
         }
         res.sendStatus(204);
     }).catch((err) => {

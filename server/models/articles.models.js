@@ -1,8 +1,8 @@
 const connection = require('../../connection.js');
 
-exports.fetchArticlesByID = (article_id) => {
+exports.fetchArticleByID = (article_id) => {
     return connection
-    .first('*') //same as select, except gives first element that it finds
+    .first('*') 
     .from('articles')
     .where('article_id', '=', article_id)
     .then((article) => {
@@ -23,9 +23,9 @@ exports.fetchArticlesByID = (article_id) => {
     })
 };
 
-exports.removeArticlesByID = (article_id) => {
+exports.removeArticleByID = (article_id) => {
     return connection
-    .first('*') //same as select, except gives first element that it finds
+    .first('*') 
     .from('articles')
     .where('article_id', '=', article_id)
     .then((article) => {
@@ -38,3 +38,16 @@ exports.removeArticlesByID = (article_id) => {
         }
     });
 };
+
+exports.modifyArticleByID = (article_id, inc_vote) => {
+    return connection
+    .first('*') 
+    .from('articles')
+    .where('article_id', '=', article_id)
+    .then((article) => {
+        if(article) {
+        article.votes = (article.votes) - inc_vote;
+        }
+        return article
+    })
+}

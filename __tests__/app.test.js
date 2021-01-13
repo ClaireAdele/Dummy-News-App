@@ -59,7 +59,21 @@ describe('/api', () => {
         test('DELETE - status 204 - deletes the article and associated comments at parametric endpoint specified', () => {
             return request(app)
             .delete('/api/articles/1')
-            .expect(204);
+            .expect(204)
+            .then(() => {
+                return request(app)
+                .get('/api/articles/1')
+                .expect(404)
+            }).then((res) => {
+                expect(res.text).toEqual("{\"msg\":\"Not Found - article_id does not exist in database\"}"
+                )
+            }).then(() => {
+                //once I have a comment endpoint in pace, I can check that the comments are getting destroyed. They are, since no conflict, but I would like to be able to prove that through express.
+            })
+        });
+
+        test('PATCH - status 201 - accepts a body formatted { inc_votes : number }, and increments the vote property of the article selected by the number specified', () => {
+            
         });
 
         test('ERROR GET - Invalid parametric endpoint input, the path is correct, but the input does not correspond to anything in the database', () => {
