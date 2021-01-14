@@ -3,6 +3,8 @@ const app = require('../app.js');
 const request = require('supertest');
 const connection = require('../connection.js')
 
+// need to add a few tests for the patch method, to check that it decrements count as well, + make it so it cna't go below zero. 
+
 beforeEach(( ) => connection.seed.run());
 
 describe('/api', () => {
@@ -71,7 +73,7 @@ describe('/api', () => {
             })
         });
 
-        test('PATCH - status 201 - accepts a body formatted { inc_votes : number }, and increments the vote property of the article selected by the number specified', () => {
+        test('PATCH - status 201 - accepts a body formatted { inc_votes : number }, and increments the vote property of the article selected by the number specified if the number is positive', () => {
             const incrementVote = { inc_votes : 1}
             return request(app)
             .patch('/api/articles/1')
@@ -90,7 +92,45 @@ describe('/api', () => {
             });
         });
 
-        test('ERROR GET - Invalid parametric endpoint input, the path is correct, but the input does not correspond to anything in the database', () => {
+        test('PATCH - status 201 - accepts a body formatted { inc_votes : number }, and decrements the vote property of the article selected by the number specified if the number is negative', () => {
+            const incrementVote = { inc_votes : -10}
+            return request(app)
+            .patch('/api/articles/1')
+            .send(incrementVote)
+            .expect(201)
+            .then((patchedArticle) => {
+                expect(patchedArticle.body).toEqual(expect.objectContaining({
+                    author : expect.any(String),
+                    title : expect.any(String),
+                    article_id : 1,
+                    body : expect.any(String),
+                    topic : expect.any(String),
+                    created_at :expect.any(String),
+                    votes : 90,
+                }))
+            });
+        });
+
+        test('PATCH - status 201 - the number of votes cannot go below zero', () => {
+            const incrementVote = { inc_votes : -110}
+            return request(app)
+            .patch('/api/articles/1')
+            .send(incrementVote)
+            .expect(201)
+            .then((patchedArticle) => {
+                expect(patchedArticle.body).toEqual(expect.objectContaining({
+                    author : expect.any(String),
+                    title : expect.any(String),
+                    article_id : 1,
+                    body : expect.any(String),
+                    topic : expect.any(String),
+                    created_at :expect.any(String),
+                    votes : 0,
+                }))
+            });
+        });
+
+        test('ERROR GET - 404 - Invalid parametric endpoint input, the path is correct, but the input does not correspond to anything in the database', () => {
             return request(app)
             .get('/api/articles/109')
             .expect(404)
@@ -101,7 +141,7 @@ describe('/api', () => {
             });
         });
 
-        test('ERROR DELETE - Invalid parametric endpoint input, the path is correct, but the input does not correspond to anything in the database', () => {
+        test('ERROR DELETE - 404 - Invalid parametric endpoint input, the path is correct, but the input does not correspond to anything in the database', () => {
             return request(app)
             .delete('/api/articles/109')
             .expect(404)
