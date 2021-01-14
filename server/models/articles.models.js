@@ -7,11 +7,11 @@ exports.fetchArticleByID = (article_id) => {
     .where('article_id', '=', article_id)
     .then((article) => {
         return Promise.all 
-            ([
-            connection
+            ([connection
             .select('*')
             .from('comments')
-            .where('article_id', '=', article_id), 
+            .where('article_id', '=', article_id)
+            .returning('*'),
             article
             ]);
     }).then(([comments, article]) => {
@@ -47,4 +47,12 @@ exports.modifyArticleByID = (article_id, inc_votes) => {
     .then(([article]) => {
         return article
     });
+}
+
+exports.fetchAllArticles = () => {
+    return connection
+    .select('*')
+    .from('articles')
+    .orderBy('created_at')
+    .returning('*')
 }

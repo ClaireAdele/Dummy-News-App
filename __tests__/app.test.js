@@ -50,7 +50,7 @@ describe('/api', () => {
                     topic : expect.any(String),
                     created_at :expect.any(String),
                     votes : expect.any(Number),
-                    comments_count : expect.any(Number)
+                    comments_count : 13
                 }));
             });
         });
@@ -126,6 +126,34 @@ describe('/api', () => {
                     votes : 0,
                 }))
             });
+        });
+
+        
+        test('GET - status 200 - gets all of the articles and returns them as object containing the following properties {author, title, article_id, topic, created_at, votes, comments_count}', () => {
+            return request(app)
+            .get('/api/articles')
+            .expect(200)
+            .then((articles) => {
+                expect(articles.body.articles.length).toBe(12);
+                expect(articles.body.articles[0]).toEqual(expect.objectContaining({
+                    author : expect.any(String),
+                    title : expect.any(String),
+                    article_id : expect.any(Number),
+                    body : expect.any(String),
+                    topic : expect.any(String),
+                    created_at :expect.any(String),
+                    votes : expect.any(Number)
+                }))
+            });
+        });
+
+        test('GET - status 200 - the order of the array of article objects defaults to being sorted by date if no queries are introduced', () => {
+            return request(app)
+            .get('/api/articles')
+            .expect(200)
+            .then((articles) => {
+                expect(articles.body.articles).toBeSortedBy('created_at')
+            })
         });
 
         test('ERROR GET - 404 - Invalid parametric endpoint input, the path is correct, but the input does not correspond to anything in the database', () => {
