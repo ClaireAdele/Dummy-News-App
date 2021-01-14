@@ -8,7 +8,7 @@ beforeEach(( ) => connection.seed.run());
 describe('/api', () => {
     describe('api/topics', () => {
 
-        test('GET - status 200 - gets the array of all topics, within an object, at a key of topics', () => {
+        test('GET ALL TOPICS - status 200 - gets the array of all topics, within an object, at a key of topics', () => {
             return request(app)
             .get('/api/topics')
             .expect(200)
@@ -23,7 +23,7 @@ describe('/api', () => {
     });
 
     describe('/api/users', () => {
-        test('GET - status 200 - get a user object with the following properties: username, avatar_url, name', () => {
+        test('GET USER BY USERNAME- status 200 - get a user object with the following properties: username, avatar_url, name', () => {
             return request(app)
             .get('/api/users/butter_bridge')
             .expect(200)
@@ -37,7 +37,7 @@ describe('/api', () => {
     });
     
     describe('/api/articles', () => {
-        test('GET - status 200 - get an article object corresponding to the article_id in parameters', () => {
+        test('GET ARTICLE BY ID - status 200 - get an article object corresponding to the article_id in parameters', () => {
             return request(app)
             .get('/api/articles/1')
             .expect(200)
@@ -55,7 +55,7 @@ describe('/api', () => {
             });
         });
 
-        test('DELETE - status 204 - deletes the article and associated comments at parametric endpoint specified', () => {
+        test('DELETE ARTICLE BY ID- status 204 - deletes the article and associated comments at parametric endpoint specified', () => {
             return request(app)
             .delete('/api/articles/1')
             .expect(204)
@@ -71,7 +71,7 @@ describe('/api', () => {
             })
         });
 
-        test('PATCH - status 201 - accepts a body formatted { inc_votes : number }, and increments the vote property of the article selected by the number specified if the number is positive', () => {
+        test('PATCH ARTICLE VOTE PROPERTY BY ID- status 201 - accepts a body formatted { inc_votes : number }, and increments the vote property of the article selected by the number specified if the number is positive', () => {
             const incrementVote = { inc_votes : 1}
             return request(app)
             .patch('/api/articles/1')
@@ -90,7 +90,7 @@ describe('/api', () => {
             });
         });
 
-        test('PATCH - status 201 - accepts a body formatted { inc_votes : number }, and decrements the vote property of the article selected by the number specified if the number is negative', () => {
+        test('PATCH ARTICLE VOTE PROPERTY BY ID - status 201 - accepts a body formatted { inc_votes : number }, and decrements the vote property of the article selected by the number specified if the number is negative', () => {
             const incrementVote = { inc_votes : -10}
             return request(app)
             .patch('/api/articles/1')
@@ -109,7 +109,7 @@ describe('/api', () => {
             });
         });
 
-        test.skip('PATCH - status 201 - the number of votes cannot go below zero', () => {
+        test.skip('PATCH ARTICLE VOTE PROPERTY BY ID - status 201 - the number of votes cannot go below zero', () => {
             const incrementVote = { inc_votes : -110}
             return request(app)
             .patch('/api/articles/1')
@@ -128,8 +128,7 @@ describe('/api', () => {
             });
         });
 
-        
-        test('GET - status 200 - gets all of the articles and returns them as object containing the following properties {author, title, article_id, topic, created_at, votes, comments_count}', () => {
+        test('GET ALL ARTICLES - status 200 - gets all of the articles and returns them as object containing the following properties {author, title, article_id, topic, created_at, votes, comments_count}', () => {
             return request(app)
             .get('/api/articles')
             .expect(200)
@@ -147,7 +146,7 @@ describe('/api', () => {
             });
         });
 
-        test('GET - status 200 - the order of the array of article objects defaults to being sorted by date if no queries are introduced', () => {
+        test('GET ALL ARTICLES - status 200 - the order of the array of article objects defaults to being sorted by date if no queries are introduced', () => {
             return request(app)
             .get('/api/articles')
             .expect(200)
@@ -156,7 +155,44 @@ describe('/api', () => {
             })
         });
 
-        test('ERROR GET - 404 - Invalid parametric endpoint input, the path is correct, but the input does not correspond to anything in the database', () => {
+        test('GET ALL ARTICLES - status 200 - the order of the array of article objects defaults to being sorted by date if no queries are introduced', () => {
+            return request(app)
+            .get('/api/articles?order=desc')
+            .expect(200)
+            .then((articles) => {
+                expect(articles.body.articles).toBeSortedBy('created_at', { descending : true });
+            })
+        });
+
+        test('GET ALL ARTICLES - status 200 - if an author query is made, responds with the articles associated with the author specified', () => {
+            return request(app)
+            .get('/api/articles?author=rogersop')
+            .expect(200)
+            .then((articles) => {
+                const articlesLength = articles.body.articles.length;
+                for(let i = 0; i < articlesLength; i++) {
+                expect(articles.body.articles[0]).toEqual(expect.objectContaining({
+                    author : 'rogersop'
+                    }));
+                }   
+            });
+        });
+
+        test('GET ALL ARTICLES - status 200 - if an author query is made, responds with the articles associated with the author specified', () => {
+            return request(app)
+            .get('/api/articles?topic=mitch')
+            .expect(200)
+            .then((articles) => {
+                const articlesLength = articles.body.articles.length;
+                for(let i = 0; i < articlesLength; i++) {
+                    expect(articles.body.articles[i]).toEqual(expect.objectContaining({
+                        topic : 'mitch'
+                    }));
+                }
+            });
+        });
+
+        test('ERROR GET ARTICLE BY ID - 404 - Invalid parametric endpoint input, the path is correct, but the input does not correspond to anything in the database', () => {
             return request(app)
             .get('/api/articles/109')
             .expect(404)
@@ -168,7 +204,7 @@ describe('/api', () => {
             });
         });
 
-        test('ERROR DELETE - 404 - Invalid parametric endpoint input, the path is correct, but the input does not correspond to anything in the database', () => {
+        test('ERROR DELETE ARTICLE BY ID - 404 - Invalid parametric endpoint input, the path is correct, but the input does not correspond to anything in the database', () => {
             return request(app)
             .delete('/api/articles/109')
             .expect(404)
@@ -179,7 +215,7 @@ describe('/api', () => {
             });
         });
 
-        test('ERROR PATCH - status 400 Bad Request - the body on the request is not formatted properly, and thus, can\'t patch the article object', () => {
+        test('ERROR PATCH ARTICLE VOTE PROPERTY BY ID - status 400 Bad Request - the body on the request is not formatted properly, and thus, can\'t patch the article object', () => {
             const wrongReq = { 'wrong input' : 'is not going to work'}
             return request(app)
             .patch('/api/articles/1')
@@ -192,7 +228,7 @@ describe('/api', () => {
         });
 
         describe('/api/articles/comments', () => {
-            test('POST - status 201 - takes a post request formatted as {username, body} and posts a comment that references the appropriate article in the database', () => {
+            test('POST COMMENTS ON ARTICLE SELECTED BY ID - status 201 - takes a post request formatted as {username, body} and posts a comment that references the appropriate article in the database', () => {
                 const input = {username: "icellusedkars", body : "I think therefore I am"};
 
                 return request(app)
@@ -211,7 +247,7 @@ describe('/api', () => {
                 })
             });
 
-            test('GET - status 200 - get all the comments associated with a particular article', () => {
+            test('GET ALL THE COMMENTS FOR ARTICLE SELECTED BY ID - status 200 - get all the comments associated with a particular article', () => {
                 return request(app)
                 .get('/api/articles/1/comments')
                 .expect(200)
@@ -228,7 +264,7 @@ describe('/api', () => {
                 });
             });
 
-            test('GET - status 200 - comments are sorted according to their created_at property by default', () => {
+            test('GET ALL THE COMMENTS FOR ARTICLE SELECTED BY ID - status 200 - comments are sorted according to their created_at property by default', () => {
                 return request(app)
                 .get('/api/articles/1/comments')
                 .expect(200)
@@ -237,7 +273,7 @@ describe('/api', () => {
                 });
             });
 
-            test('GET - status 200 - comments are sorted according to their created_at property by default, and respond to query for asc or desc order', () => {
+            test('GET ALL THE COMMENTS FOR ARTICLE SELECTED BY ID - status 200 - comments are sorted according to their created_at property by default, and respond to query for asc or desc order', () => {
                 return request(app)
                 .get('/api/articles/1/comments?order=desc')
                 .expect(200)
@@ -246,7 +282,7 @@ describe('/api', () => {
                 });
             });
 
-            test('ERROR POST - status 400 Bad Request - the body on the request is not formatted properly, and thus, can\'t post the comment', () => {
+            test('ERROR POST COMMENTS ON ARTICLE SELECTED BY ID - status 400 Bad Request - the body on the request is not formatted properly, and thus, can\'t post the comment', () => {
                 const wrongReq = { 'wrong input' : 'is not going to work',
                 'wrong input 2' : 'still not going to work'}
 
@@ -260,7 +296,7 @@ describe('/api', () => {
                 })
             });
 
-            test('ERROR POST - status 404 Not Found - the article_id on the request does not correspond to an existing article, and thus, can\'t post a comment', () => {
+            test('ERROR POST COMMENTS ON ARTICLE SELECTED BY ID - status 404 Not Found - the article_id on the request does not correspond to an existing article, and thus, can\'t post a comment', () => {
                 const input = {username: "icellusedkars", body : "I think therefore I am"};
                 
                 return request(app)
@@ -273,7 +309,7 @@ describe('/api', () => {
                 })
             });
 
-            test('ERROR GET - status 404 Not Found - the article_id on the request does not correspond to an existing article, and thus, can\'t get the comments associated with it', () => {
+            test('ERROR GET ALL THE COMMENTS FOR ARTICLE SELECTED BY ID - status 404 Not Found - the article_id on the request does not correspond to an existing article, and thus, can\'t get the comments associated with it', () => {
                 return request(app)
                 .get('/api/articles/10000/comments')
                 .expect(404)

@@ -49,10 +49,28 @@ exports.modifyArticleByID = (article_id, inc_votes) => {
     });
 }
 
-exports.fetchAllArticles = () => {
-    return connection
-    .select('*')
-    .from('articles')
-    .orderBy('created_at')
-    .returning('*')
+exports.fetchAllArticles = (sort_by = 'created_at', order = 'asc', author, topic) => {
+    if(!topic && !author) {
+        return connection
+        .select('*')
+        .from('articles')
+        .orderBy(sort_by, order)
+        .returning('*')
+    }
+    if(topic) {
+        return connection
+        .select('*')
+        .from('articles')
+        .where('topic', '=', topic)
+        .orderBy(sort_by, order)
+        .returning('*')
+    }
+    if(author){
+        return connection
+        .select('*')
+        .from('articles')
+        .where('author', '=', author)
+        .orderBy(sort_by, order)
+        .returning('*')
+    }
 }
