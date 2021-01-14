@@ -1,5 +1,4 @@
 const connection = require('../../connection.js');
-const articlesRouter = require('../routers/articles.router.js');
 
 exports.fetchArticleByID = (article_id) => {
     return connection
@@ -41,17 +40,11 @@ exports.removeArticleByID = (article_id) => {
 };
 
 exports.modifyArticleByID = (article_id, inc_votes) => {
-    return connection
-    .first('*') 
-    .from('articles')
+    return connection('articles')
+    .increment('votes', inc_votes)
     .where('article_id', '=', article_id)
-    .then((article) => {
-        if(article) {
-        article.votes = (article.votes) + inc_votes;
-            if(article.votes < 0) {
-                article.votes = 0;
-            }
-        }
+    .returning('*')
+    .then(([article]) => {
         return article
-    })
+    });
 }
