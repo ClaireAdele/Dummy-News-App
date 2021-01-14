@@ -16,13 +16,15 @@ exports.postCommentOnSelectedArticle = (req, res, next) => {
 
 exports.getAllCommentsByArticle = (req, res, next) => {
     const { article_id } = req.params; 
-    fetchAllCommentsByArticle(article_id).then((comments) => {
+    const { sort_by, order } = req.query;
+    console.log(sort_by)
+    console.log(order)
+    fetchAllCommentsByArticle(article_id, sort_by, order).then((comments) => {
         if(!comments) {
             return Promise.reject({ status : 404, msg : 'Not Found - can\'t return comments if article_id does not exist in database' });
         }
         res.send({comments});
     }).catch((err) => {
-        console.log(err)
         next(err);
     })
 }

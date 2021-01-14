@@ -183,34 +183,7 @@ describe('/api', () => {
                 })
             });
 
-            test('ERROR POST - status 404 Not Found - the article_id on the request does not correspond to an existing article, and thus, can\'t post a comment', () => {
-                const input = {username: "icellusedkars", body : "I think therefore I am"};
-                
-                return request(app)
-                .post('/api/articles/900000/comments')
-                .send(input)
-                .expect(404)
-                .then((errorMessage) => {
-                    expect(errorMessage.body).toEqual(
-                    { "msg": 'Not Found - can\'t post comment if article_id does not exist in database'})
-                })
-            });
-
-            test('ERROR POST - status 400 Bad Request - the body on the request is not formatted properly, and thus, can\'t post the comment', () => {
-                const wrongReq = { 'wrong input' : 'is not going to work',
-                'wrong input 2' : 'still not going to work'}
-
-                return request(app)
-                .post('/api/articles/1/comments')
-                .send(wrongReq)
-                .expect(400)
-                .then((errorMessage) => {
-                    expect(errorMessage.body).toEqual(
-                    { "msg": "Incorrect request - request must be formatted to conform to following model : {username, body}" })
-                })
-            });
-            
-            test('GET - status 200 - get all the comments associated with a partical article', () => {
+            test('GET - status 200 - get all the comments associated with a particular article', () => {
                 return request(app)
                 .get('/api/articles/1/comments')
                 .expect(200)
@@ -233,6 +206,51 @@ describe('/api', () => {
                 .expect(200)
                 .then((comments) => {
                     expect(comments).toBeSortedBy('created_at');
+                });
+            });
+
+            test('GET - status 200 - comments are sorted according to their created_at property by default, and respond to query for asc or desc order', () => {
+                return request(app)
+                .get('/api/articles/1/comments?order=desc')
+                .expect(200)
+                .then((comments) => {
+                    expect(comments).toBeSortedBy('created_at', { descending : true });
+                });
+            });
+
+            test('ERROR POST - status 400 Bad Request - the body on the request is not formatted properly, and thus, can\'t post the comment', () => {
+                const wrongReq = { 'wrong input' : 'is not going to work',
+                'wrong input 2' : 'still not going to work'}
+
+                return request(app)
+                .post('/api/articles/1/comments')
+                .send(wrongReq)
+                .expect(400)
+                .then((errorMessage) => {
+                    expect(errorMessage.body).toEqual(
+                    { "msg": "Incorrect request - request must be formatted to conform to following model : {username, body}" })
+                })
+            });
+
+            test('ERROR POST - status 404 Not Found - the article_id on the request does not correspond to an existing article, and thus, can\'t post a comment', () => {
+                const input = {username: "icellusedkars", body : "I think therefore I am"};
+                
+                return request(app)
+                .post('/api/articles/900000/comments')
+                .send(input)
+                .expect(404)
+                .then((errorMessage) => {
+                    expect(errorMessage.body).toEqual(
+                    { "msg": 'Not Found - can\'t post comment if article_id does not exist in database'})
+                })
+            });
+
+            test('ERROR GET - status 404 Not Found - the article_id on the request does not correspond to an existing article, and thus, can\'t get the comments associated with it', () => {
+                return request(app)
+                .get('/api/articles/10000/comments')
+                .expect(404)
+                .then((errorMessage) => {
+                    expect(errorMessage.body).toEqual({ msg : 'Not Found - can\'t return comments if article_id does not exist in database' })
                 });
             });
         });//describe

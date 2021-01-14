@@ -24,7 +24,7 @@ exports.writeCommentOnSelectedArticle = (article_id, username, body) => {
     }
 }
 
-exports.fetchAllCommentsByArticle = (article_id) => {
+exports.fetchAllCommentsByArticle = (article_id, sort_by = 'created_at', order = 'asc') => {
     return connection
         .first('*')
         .from('articles')
@@ -36,7 +36,7 @@ exports.fetchAllCommentsByArticle = (article_id) => {
             .select('*')
             .from('comments')
             .where('article_id', '=', article_id)
-            .orderBy('created_at')
+            .orderBy(sort_by, order)
             .returning('*')
             .then((comments) => {
                 return comments;
