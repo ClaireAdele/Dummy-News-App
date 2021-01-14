@@ -192,7 +192,7 @@ describe('/api', () => {
                 .expect(404)
                 .then((errorMessage) => {
                     expect(errorMessage.body).toEqual(
-                    { "msg": 'Not Found - can\'t post article if article_id does not exist in database'})
+                    { "msg": 'Not Found - can\'t post comment if article_id does not exist in database'})
                 })
             });
 
@@ -209,8 +209,32 @@ describe('/api', () => {
                     { "msg": "Incorrect request - request must be formatted to conform to following model : {username, body}" })
                 })
             });
-    
-    
+            
+            test('GET - status 200 - get all the comments associated with a partical article', () => {
+                return request(app)
+                .get('/api/articles/1/comments')
+                .expect(200)
+                .then((comments) => {
+                    expect(comments.body.comments.length).toBe(13);
+                    expect(comments.body.comments[0]).toEqual(expect.objectContaining({
+                        comment_id : expect.any(Number),
+                        author : expect.any(String),
+                        article_id : 1,
+                        body : expect.any(String),
+                        created_at :expect.any(String),
+                        votes : expect.any(Number),
+                    }))
+                });
+            });
+
+            test('GET - status 200 - comments are sorted according to their created_at property by default', () => {
+                return request(app)
+                .get('/api/articles/1/comments')
+                .expect(200)
+                .then((comments) => {
+                    expect(comments).toBeSortedBy('created_at');
+                });
+            });
         });//describe
     });//describe
 });
@@ -221,7 +245,7 @@ describe('/not-a-route', () => {
         .get('/not-a-route')
         .expect(404)
         .then(({body}) => {
-            expect(body.message).toBe('Not Found');
+            expect(body.message).toBe('Not Found - the url entered does not match any content');
         });
     });
 });

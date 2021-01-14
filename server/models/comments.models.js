@@ -23,3 +23,26 @@ exports.writeCommentOnSelectedArticle = (article_id, username, body) => {
         });
     }
 }
+
+exports.fetchAllCommentsByArticle = (article_id) => {
+    return connection
+        .first('*')
+        .from('articles')
+        .where('article_id', '=', article_id)
+        .returning('*')
+        .then((article) => {
+            if(article) {
+            return connection('comments')
+            .select('*')
+            .from('comments')
+            .where('article_id', '=', article_id)
+            .orderBy('created_at')
+            .returning('*')
+            .then((comments) => {
+                return comments;
+            })
+            } else {
+                return undefined;
+            }
+        });
+}

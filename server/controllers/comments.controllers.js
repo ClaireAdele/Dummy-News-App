@@ -1,4 +1,4 @@
-const { writeCommentOnSelectedArticle } = require('../models/comments.models.js');
+const { writeCommentOnSelectedArticle, fetchAllCommentsByArticle } = require('../models/comments.models.js');
 
 exports.postCommentOnSelectedArticle = (req, res, next) => {
     const { article_id } = req.params;
@@ -6,10 +6,23 @@ exports.postCommentOnSelectedArticle = (req, res, next) => {
     const { body } = req.body;
     writeCommentOnSelectedArticle(article_id, username, body).then((comment) => {
         if(!comment) {
-            return Promise.reject({ status : 404, msg : 'Not Found - can\'t post article if article_id does not exist in database' });
+            return Promise.reject({ status : 404, msg : 'Not Found - can\'t post comment if article_id does not exist in database' });
         }
         res.status(201).send({comment});
     }).catch((err) => {
         next(err);
     });
+}
+
+exports.getAllCommentsByArticle = (req, res, next) => {
+    const { article_id } = req.params; 
+    fetchAllCommentsByArticle(article_id).then((comments) => {
+        if(!comments) {
+            return Promise.reject({ status : 404, msg : 'Not Found - can\'t return comments if article_id does not exist in database' });
+        }
+        res.send({comments});
+    }).catch((err) => {
+        console.log(err)
+        next(err);
+    })
 }

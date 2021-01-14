@@ -13,5 +13,5 @@ exports.handlesInvalidInput = (err, req, res, next) => {
 }
 
 exports.handlesInvalidPath = (req, res, next) => {
-    res.status(404).send({'message' : 'Not Found'});
+    res.status(404).send({'message' : 'Not Found - the url entered does not match any content'});
 }
