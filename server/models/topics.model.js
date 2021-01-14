@@ -1,10 +1,10 @@
 const connection = require('../../connection.js');
 
-exports.selectAllTopics = () =>{
+exports.selectAllTopics = () => {
     return connection
-    .select('*')
-    .from('topics')
-    .then((topics) => {
-        return topics;
-    })
+        .select('*')
+        .from('topics')
+        .then((topics) => {
+            return topics;
+        });
 }
