@@ -47,7 +47,6 @@ exports.getAllArticles = (req, res, next) => {
     fetchAllArticles(sort_by, order, author, topic).then((articles) => {
         res.send({ articles });
     }).catch((err) => {
-        console.log(err)
         next(err);
     });
 }

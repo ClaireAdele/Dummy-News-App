@@ -157,7 +157,7 @@ describe('/api', () => {
                 })
         });
 
-        test('GET ALL ARTICLES - status 200 - the order of the array of article objects defaults to being sorted by date if no queries are introduced', () => {
+        test('GET ALL ARTICLES - status 200 - the order of the array of article objects changes depending on the query', () => {
             return request(app)
                 .get('/api/articles?order=desc')
                 .expect(200)
@@ -180,7 +180,7 @@ describe('/api', () => {
                 });
         });
 
-        test('GET ALL ARTICLES - status 200 - if an author query is made, responds with the articles associated with the author specified', () => {
+        test('GET ALL ARTICLES - status 200 - if a topic query is made, responds with the articles associated with the author specified', () => {
             return request(app)
                 .get('/api/articles?topic=mitch')
                 .expect(200)
@@ -226,104 +226,105 @@ describe('/api', () => {
                 .then((errorMessage) => {
                     expect(errorMessage.body).toEqual(
                         { "msg": "Incorrect request - request must be formatted to conform to following model : {inc_votes : vote_number}" })
+                });
+        });
+    });
+
+    describe('/api/articles/comments', () => {
+        test('POST COMMENTS ON ARTICLE SELECTED BY ID - status 201 - takes a post request formatted as {username, body} and posts a comment that references the appropriate article in the database', () => {
+            const input = { username: "icellusedkars", body: "I think therefore I am" };
+
+            return request(app)
+                .post('/api/articles/1/comments')
+                .send(input)
+                .expect(201)
+                .then((commentPosted) => {
+                    expect(commentPosted.body.comment).toEqual(expect.objectContaining({
+                        comment_id: expect.any(Number),
+                        author: 'icellusedkars',
+                        article_id: 1,
+                        body: 'I think therefore I am',
+                        created_at: expect.any(String),
+                        votes: 0,
+                    }))
                 })
         });
 
-        describe('/api/articles/comments', () => {
-            test('POST COMMENTS ON ARTICLE SELECTED BY ID - status 201 - takes a post request formatted as {username, body} and posts a comment that references the appropriate article in the database', () => {
-                const input = { username: "icellusedkars", body: "I think therefore I am" };
+        test('GET ALL THE COMMENTS FOR ARTICLE SELECTED BY ID - status 200 - get all the comments associated with a particular article', () => {
+            return request(app)
+                .get('/api/articles/1/comments')
+                .expect(200)
+                .then((comments) => {
+                    expect(comments.body.comments.length).toBe(13);
+                    expect(comments.body.comments[0]).toEqual(expect.objectContaining({
+                        comment_id: expect.any(Number),
+                        author: expect.any(String),
+                        article_id: 1,
+                        body: expect.any(String),
+                        created_at: expect.any(String),
+                        votes: expect.any(Number),
+                    }))
+                });
+        });
 
-                return request(app)
-                    .post('/api/articles/1/comments')
-                    .send(input)
-                    .expect(201)
-                    .then((commentPosted) => {
-                        expect(commentPosted.body.comment).toEqual(expect.objectContaining({
-                            comment_id: expect.any(Number),
-                            author: 'icellusedkars',
-                            article_id: 1,
-                            body: 'I think therefore I am',
-                            created_at: expect.any(String),
-                            votes: 0,
-                        }))
-                    })
-            });
+        test('GET ALL THE COMMENTS FOR ARTICLE SELECTED BY ID - status 200 - comments are sorted according to their created_at property by default', () => {
+            return request(app)
+                .get('/api/articles/1/comments')
+                .expect(200)
+                .then((comments) => {
+                    expect(comments).toBeSortedBy('created_at');
+                });
+        });
 
-            test('GET ALL THE COMMENTS FOR ARTICLE SELECTED BY ID - status 200 - get all the comments associated with a particular article', () => {
-                return request(app)
-                    .get('/api/articles/1/comments')
-                    .expect(200)
-                    .then((comments) => {
-                        expect(comments.body.comments.length).toBe(13);
-                        expect(comments.body.comments[0]).toEqual(expect.objectContaining({
-                            comment_id: expect.any(Number),
-                            author: expect.any(String),
-                            article_id: 1,
-                            body: expect.any(String),
-                            created_at: expect.any(String),
-                            votes: expect.any(Number),
-                        }))
-                    });
-            });
+        test('GET ALL THE COMMENTS FOR ARTICLE SELECTED BY ID - status 200 - comments are sorted according to their created_at property by default, and respond to query for asc or desc order', () => {
+            return request(app)
+                .get('/api/articles/1/comments?order=desc')
+                .expect(200)
+                .then((comments) => {
+                    expect(comments).toBeSortedBy('created_at', { descending: true });
+                });
+        });
 
-            test('GET ALL THE COMMENTS FOR ARTICLE SELECTED BY ID - status 200 - comments are sorted according to their created_at property by default', () => {
-                return request(app)
-                    .get('/api/articles/1/comments')
-                    .expect(200)
-                    .then((comments) => {
-                        expect(comments).toBeSortedBy('created_at');
-                    });
-            });
+        test('ERROR POST COMMENTS ON ARTICLE SELECTED BY ID - status 400 Bad Request - the body on the request is not formatted properly, and thus, can\'t post the comment', () => {
+            const wrongReq = {
+                'wrong input': 'is not going to work',
+                'wrong input 2': 'still not going to work'
+            }
 
-            test('GET ALL THE COMMENTS FOR ARTICLE SELECTED BY ID - status 200 - comments are sorted according to their created_at property by default, and respond to query for asc or desc order', () => {
-                return request(app)
-                    .get('/api/articles/1/comments?order=desc')
-                    .expect(200)
-                    .then((comments) => {
-                        expect(comments).toBeSortedBy('created_at', { descending: true });
-                    });
-            });
+            return request(app)
+                .post('/api/articles/1/comments')
+                .send(wrongReq)
+                .expect(400)
+                .then((errorMessage) => {
+                    expect(errorMessage.body).toEqual(
+                        { "msg": "Incorrect request - request must be formatted to conform to following model : {username, body}" })
+                })
+        });
 
-            test('ERROR POST COMMENTS ON ARTICLE SELECTED BY ID - status 400 Bad Request - the body on the request is not formatted properly, and thus, can\'t post the comment', () => {
-                const wrongReq = {
-                    'wrong input': 'is not going to work',
-                    'wrong input 2': 'still not going to work'
-                }
+        test('ERROR POST COMMENTS ON ARTICLE SELECTED BY ID - status 404 Not Found - the article_id on the request does not correspond to an existing article, and thus, can\'t post a comment', () => {
+            const input = { username: "icellusedkars", body: "I think therefore I am" };
 
-                return request(app)
-                    .post('/api/articles/1/comments')
-                    .send(wrongReq)
-                    .expect(400)
-                    .then((errorMessage) => {
-                        expect(errorMessage.body).toEqual(
-                            { "msg": "Incorrect request - request must be formatted to conform to following model : {username, body}" })
-                    })
-            });
+            return request(app)
+                .post('/api/articles/900000/comments')
+                .send(input)
+                .expect(404)
+                .then((errorMessage) => {
+                    expect(errorMessage.body).toEqual(
+                        { "msg": 'Not Found - can\'t post comment if article_id does not exist in database' })
+                })
+        });
 
-            test('ERROR POST COMMENTS ON ARTICLE SELECTED BY ID - status 404 Not Found - the article_id on the request does not correspond to an existing article, and thus, can\'t post a comment', () => {
-                const input = { username: "icellusedkars", body: "I think therefore I am" };
-
-                return request(app)
-                    .post('/api/articles/900000/comments')
-                    .send(input)
-                    .expect(404)
-                    .then((errorMessage) => {
-                        expect(errorMessage.body).toEqual(
-                            { "msg": 'Not Found - can\'t post comment if article_id does not exist in database' })
-                    })
-            });
-
-            test('ERROR GET ALL THE COMMENTS FOR ARTICLE SELECTED BY ID - status 404 Not Found - the article_id on the request does not correspond to an existing article, and thus, can\'t get the comments associated with it', () => {
-                return request(app)
-                    .get('/api/articles/10000/comments')
-                    .expect(404)
-                    .then((errorMessage) => {
-                        expect(errorMessage.body).toEqual({ msg: 'Not Found - can\'t return comments if article_id does not exist in database' })
-                    });
-            });
-        });//describe
+        test('ERROR GET ALL THE COMMENTS FOR ARTICLE SELECTED BY ID - status 404 Not Found - the article_id on the request does not correspond to an existing article, and thus, can\'t get the comments associated with it', () => {
+            return request(app)
+                .get('/api/articles/10000/comments')
+                .expect(404)
+                .then((errorMessage) => {
+                    expect(errorMessage.body).toEqual({ msg: 'Not Found - can\'t return comments if article_id does not exist in database' })
+                });
+        });
     });//describe
-});
+});//describe
+
 
 describe('/not-a-route', () => {
     test('ERROR - status 404 - if a user inputs a url that does not correspond to en endpoint', () => {
