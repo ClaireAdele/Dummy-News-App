@@ -1,4 +1,3 @@
-const { response } = require('express');
 const {fetchUserByUsername} = require('../models/users.models.js')
 
 exports.getUserByUsername = (req, res, next) => {

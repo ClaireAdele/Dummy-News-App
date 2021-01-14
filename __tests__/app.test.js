@@ -172,11 +172,47 @@ describe('/api', () => {
                 .send(input)
                 .expect(201)
                 .then((commentPosted) => {
-                    console.log(commentPosted.body.comment)
+                    expect(commentPosted.body.comment).toEqual(expect.objectContaining({
+                        comment_id : expect.any(Number),
+                        author : 'icellusedkars',
+                        article_id : 1,
+                        body : 'I think therefore I am',
+                        created_at :expect.any(String),
+                        votes : 0,
+                    }))
                 })
             });
-        })
-    });
+
+            test('ERROR POST - status 404 Not Found - the article_id on the request does not correspond to an existing article, and thus, can\'t post a comment', () => {
+                const input = {username: "icellusedkars", body : "I think therefore I am"};
+                
+                return request(app)
+                .post('/api/articles/900000/comments')
+                .send(input)
+                .expect(404)
+                .then((errorMessage) => {
+                    expect(errorMessage.body).toEqual(
+                    { "msg": 'Not Found - can\'t post article if article_id does not exist in database'})
+                })
+            });
+
+            test('ERROR POST - status 400 Bad Request - the body on the request is not formatted properly, and thus, can\'t post the comment', () => {
+                const wrongReq = { 'wrong input' : 'is not going to work',
+                'wrong input 2' : 'still not going to work'}
+
+                return request(app)
+                .post('/api/articles/1/comments')
+                .send(wrongReq)
+                .expect(400)
+                .then((errorMessage) => {
+                    expect(errorMessage.body).toEqual(
+                    { "msg": "Incorrect request - request must be formatted to conform to following model : {username, body}" })
+                })
+            });
+    
+    
+        });//describe
+    });//describe
 });
 
 describe('/not-a-route', () => {
