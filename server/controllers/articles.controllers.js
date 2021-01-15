@@ -47,5 +47,7 @@ exports.postNewArticle = (req, res, next) => {
     const { username, name, title, body, topic, slug } = req.body;
     addNewArticle(username, name, title, body, topic, slug).then((article) => {
         res.status(201).send({article});
-    }).catch(next);
+    }).catch((err) => {
+        console.log(err)
+    });
 }

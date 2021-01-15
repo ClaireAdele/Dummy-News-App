@@ -109,6 +109,21 @@ exports.addNewArticle = (username, name, title, body, topic, slug) => {
                 .insert({ author: username, title, body, topic: slug })
                 .returning('*')
         }).then(([article]) => {
-            return article
-        });
+            const getCommentsByArticle = connection.
+                select('*')
+                .from('comments')
+                .where('article_id', '=', article.article_id)
+                .returning('*')
+            return Promise.all
+                ([getCommentsByArticle,
+                    article
+                ]);
+        }).then(([comments, article]) => {
+            if (article) {
+                const countComments = comments.length;
+                article.comments_count = countComments;
+            }
+            return article;
+        })
 }
+

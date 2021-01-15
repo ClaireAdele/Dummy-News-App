@@ -7,10 +7,10 @@ exports.updateDate = ((articlesArr) => {
     });
 })
 
-exports.lookUp = (array,value_1,value_2) =>{
+exports.createLookUp = (array, value_1, value_2) =>{
     const lookUpData = {}
     array.forEach(obj => {
-        lookUpData[obj[`${value_1}`]]=obj[`${value_2}`];
+        lookUpData[obj[`${value_1}`]] = obj[`${value_2}`];
     })
     return lookUpData;
 }

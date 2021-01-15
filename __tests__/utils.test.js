@@ -1,4 +1,4 @@
-const { updateDate, deleteVotes, lookUp, modCommentsData } = require('../db/utils/data-manipulation')
+const { updateDate, createLookUp, modCommentsData } = require('../db/utils/data-manipulation')
 
 describe('updateDate', () => {
   test('returns an empty array when passed with an empty array', () => {
@@ -144,13 +144,13 @@ describe('updateDate', () => {
   });
 });
 
-describe('lookUp', () => {
+describe('createLookUp', () => {
     test(' return an empty obj when passed and empty array', () => {
-      expect(lookUp([], "title", "article_id")).toEqual({})
+      expect(createLookUp([], "title", "article_id")).toEqual({})
     });
 
     test('return a new obj with the title and article_id key value pair', () => {
-      const data = lookUp([{
+      const data = createLookUp([{
         article_id: 1,
         title: 'Running a Node App',
         body: 'This is part two of a series on how to get up and running with Systemd and Node.js. This part dives deeper into how to successfully run your app with systemd long-term, and how to set it up in a production environment.',
@@ -163,7 +163,7 @@ describe('lookUp', () => {
     });
 
     test('return a new obj with the title and article_id key value pair', () => {
-      const data = lookUp([{
+      const data = createLookUp([{
         article_id: 1,
         title: 'Running a Node App',
         body: 'This is part two of a series on how to get up and running with Systemd and Node.js. This part dives deeper into how to successfully run your app with systemd long-term, and how to set it up in a production environment.',
@@ -197,7 +197,7 @@ describe('modCommentsData', () => {
       votes: -1,
       created_at: 1468087638932,
     }]
-    
+
     const input_2 = { 'Running a Node App': 1 }
 
     const expected = [{

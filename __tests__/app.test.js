@@ -216,7 +216,8 @@ describe('/api', () => {
                         body: "'Tis a long story",
                         topic: "code",
                         created_at: expect.any(String),
-                        votes: expect.any(Number)
+                        votes: expect.any(Number),
+                        comments_count: 0
                     }))
                 })
 
@@ -243,6 +244,7 @@ describe('/api', () => {
                         body: "'Tis a long story",
                         topic: "code",
                         created_at: expect.any(String),
+                        comments_count: 0,
                         votes: expect.any(Number)
                     }))
                 })
@@ -269,14 +271,11 @@ describe('/api', () => {
                         body: "'Tis a long story",
                         topic: "mitch",
                         created_at: expect.any(String),
+                        comments_count : 0,
                         votes: expect.any(Number)
                     }))
                 })
         }); 
-
-
-        //I am wondering if I should test for changes in other tables as well?
-        //Also, how do I make it so an existing user can post within an existing topic/slug?
 
         test('ERROR GET ARTICLE BY ID - 404 - Invalid parametric endpoint input, the path is correct, but the input does not correspond to anything in the database', () => {
             return request(app)
