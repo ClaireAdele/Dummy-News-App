@@ -6,12 +6,13 @@ exports.fetchArticleByID = (article_id) => {
         .from('articles')
         .where('article_id', '=', article_id)
         .then((article) => {
+            const getCommentsByArticle = connection.
+                select('*')
+                .from('comments')
+                .where('article_id', '=', article_id)
+                .returning('*')
             return Promise.all
-                ([connection
-                    .select('*')
-                    .from('comments')
-                    .where('article_id', '=', article_id)
-                    .returning('*'),
+                ([getCommentsByArticle,
                     article
                 ]);
         }).then(([comments, article]) => {
@@ -57,6 +58,7 @@ exports.modifyArticleByID = (article_id, inc_votes = 0) => {
 }
 
 exports.fetchAllArticles = (sort_by = 'created_at', order = 'asc', author, topic) => {
+
     if (!topic && !author) {
         return connection
             .select('*')
@@ -89,7 +91,7 @@ exports.addNewArticle = (username, name, title, body, topic, slug) => {
         .where('username', '=', username)
         .returning('*')
         .then((checkUser) => {
-            if(!checkUser) {
+            if (!checkUser) {
                 return Promise.all([connection('users').insert({ username, name })])
             }
         }).then((insertedUser) => {
@@ -99,9 +101,9 @@ exports.addNewArticle = (username, name, title, body, topic, slug) => {
                 .where('slug', "=", slug)
                 .returning('*')
         }).then((checkSlug) => {
-            if(!checkSlug) {
-                return Promise.all([connection('topics').insert({ description : topic, slug }).returning('*')])
-            } 
+            if (!checkSlug) {
+                return Promise.all([connection('topics').insert({ description: topic, slug }).returning('*')])
+            }
         }).then((insertedTopic) => {
             return connection('articles')
                 .insert({ author: username, title, body, topic: slug })

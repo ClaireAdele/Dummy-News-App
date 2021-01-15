@@ -1,17 +1,11 @@
-exports.updateDate = ((articlesArray) => {
-    return articlesArray.map((article) => {
+exports.updateDate = ((articlesArr) => {
+    return articlesArr.map((article) => {
+        const newArticle = {...article};
         let newDate = new Date(article.created_at);
-        article.created_at = newDate;
-        return article;
+        newArticle.created_at = newDate;
+        return newArticle;
     });
 })
-
-exports.deleteVotes = (array) => {
-    return array.map(obj => {
-        delete obj.votes;
-        return obj;
-    })
-}
 
 exports.lookUp = (array,value_1,value_2) =>{
     const lookUpData = {}

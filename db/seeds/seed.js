@@ -31,8 +31,7 @@ exports.seed = function (knex) {
     }).then((insertedArticles) => {
       const lookUpArticle = lookUp(insertedArticles, "title", "article_id");
       const updatedTimestampComments = updateDate(commentData);
-      const withDeletedVotes = deleteVotes(updatedTimestampComments);
-      const updatedComments = modCommentsData(withDeletedVotes, lookUpArticle);
+      const updatedComments = modCommentsData(updatedTimestampComments, lookUpArticle);
       return knex
         .insert(updatedComments)
         .into("comments")
