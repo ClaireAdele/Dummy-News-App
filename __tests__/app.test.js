@@ -69,7 +69,7 @@ describe('/api', () => {
                     expect(res.body).toEqual({ "msg": "Not Found - article_id does not exist in database" }
                     )
                 }).then(() => {
-                    //once I have a comment endpoint in pace, I can check that the comments are getting destroyed. They are, since no conflict, but I would like to be able to prove that through express.
+                    //once I have a comment endpoint in place, I can check that the comments are getting destroyed. They are, since no conflict, but I would like to be able to prove that through express.
                 })
         });
 
@@ -194,7 +194,7 @@ describe('/api', () => {
                 });
         });
 
-        test('POST NEW ARTICLE - status 201 - post a new article object formatted properly, with the following properties {author, title, article_id, body, topic, created_at, votes}', () => {
+        test('POST NEW ARTICLE - status 201 - post a new article object formatted properly, with the following properties {author, title, article_id, body, topic, created_at, votes} if the author & slug don\'t already exist in the database', () => {
             const postArticle = {
                 username: "JaneDoe",
                 name : "Claire",
@@ -221,7 +221,61 @@ describe('/api', () => {
 
         }); 
 
+        test('POST NEW ARTICLE - status 201 - the function still works and post a new article if the author already exists in the database', () => {
+            const postArticleTwo = {
+                username: "butter_bridge",
+                name : "jonny",
+                title: "How I got into coding",
+                body: "'Tis a long story",
+                topic: "Life stories",
+                slug: 'code'
+            }
+            return request(app)
+                .post('/api/articles')
+                .send(postArticleTwo)
+                .expect(201)
+                .then((article) => {
+                    expect(article.body.article).toEqual(expect.objectContaining({
+                        author: "butter_bridge",
+                        title: "How I got into coding",
+                        article_id: expect.any(Number),
+                        body: "'Tis a long story",
+                        topic: "code",
+                        created_at: expect.any(String),
+                        votes: expect.any(Number)
+                    }))
+                })
+        });
+        
+        test('POST NEW ARTICLE - status 201 - the function still works and post a new article if the slug already exists in the database', () => {
+            const postArticleTwo = {
+                username: "JaneDoe",
+                name : "Claire",
+                title: "How I got into coding",
+                body: "'Tis a long story",
+                topic: "Life stories",
+                slug: 'mitch'
+            }
+            return request(app)
+                .post('/api/articles')
+                .send(postArticleTwo)
+                .expect(201)
+                .then((article) => {
+                    expect(article.body.article).toEqual(expect.objectContaining({
+                        author: "JaneDoe",
+                        title: "How I got into coding",
+                        article_id: expect.any(Number),
+                        body: "'Tis a long story",
+                        topic: "mitch",
+                        created_at: expect.any(String),
+                        votes: expect.any(Number)
+                    }))
+                })
+        }); 
+
+
         //I am wondering if I should test for changes in other tables as well?
+        //Also, how do I make it so an existing user can post within an existing topic/slug?
 
         test('ERROR GET ARTICLE BY ID - 404 - Invalid parametric endpoint input, the path is correct, but the input does not correspond to anything in the database', () => {
             return request(app)

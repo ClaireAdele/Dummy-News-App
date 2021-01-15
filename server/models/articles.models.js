@@ -76,13 +76,25 @@ exports.fetchAllArticles = (sort_by = 'created_at', order = 'asc', author, topic
 }
 
 exports.addNewArticle = (username, name, title, body, topic, slug) => {
-    return connection('users')
-        .insert({ username, name })
+    return connection
+        .first('username')
+        .from('users')
+        .where('username', '=', username)
         .returning('*')
-        .then((user) => {
-            return connection('topics')
-                .insert({ description: topic, slug })
+        .then((checkUser) => {
+            if(!checkUser) {
+                return Promise.all([connection('users').insert({ username, name })])
+            }
+        }).then((insertedUser) => {
+            return connection
+                .first('*')
+                .from('topics')
+                .where('slug', "=", slug)
                 .returning('*')
+        }).then((checkSlug) => {
+            if(!checkSlug) {
+                return Promise.all([connection('topics').insert({ description : topic, slug }).returning('*')])
+            } 
         }).then((insertedTopic) => {
             return connection('articles')
                 .insert({ author: username, title, body, topic: slug })
