@@ -57,7 +57,7 @@ exports.modifyArticleByID = (article_id, inc_votes = 0) => {
         });
 }
 
-exports.fetchAllArticles = (sort_by = 'created_at', order = 'asc', author, topic) => {
+exports.fetchAllArticles = (sort_by = 'created_at', order = 'desc', author, topic) => {
 
     if (!topic && !author) {
         return connection

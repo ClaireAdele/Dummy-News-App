@@ -111,7 +111,7 @@ describe('/api', () => {
                 });
         });
 
-        
+
         test.skip('PATCH ARTICLE VOTE PROPERTY BY ID - status 201 - the number of votes cannot go below zero', () => {
             const incrementVote = { inc_votes: -110 }
             return request(app)
@@ -154,17 +154,24 @@ describe('/api', () => {
                 .get('/api/articles')
                 .expect(200)
                 .then((articles) => {
-                    expect(articles.body.articles).toBeSortedBy('created_at')
-                })
+                    expect(articles.body.articles).toBeSortedBy('created_at', { descending: true });
+                    expect(articles.body.articles[0]).toEqual(expect.objectContaining({
+                        article_id: 1
+                    }))
+                });
+
         });
 
         test('GET ALL ARTICLES - status 200 - the order of the array of article objects changes depending on the query', () => {
             return request(app)
-                .get('/api/articles?order=desc')
+                .get('/api/articles?order=asc')
                 .expect(200)
                 .then((articles) => {
-                    expect(articles.body.articles).toBeSortedBy('created_at', { descending: true });
-                })
+                    expect(articles.body.articles).toBeSortedBy('created_at', { ascending: true });
+                    expect(articles.body.articles[0]).toEqual(expect.objectContaining({
+                        article_id: 12
+                    }))
+                });
         });
 
         test('GET ALL ARTICLES - status 200 - if an author query is made, responds with the articles associated with the author specified', () => {
@@ -198,7 +205,7 @@ describe('/api', () => {
         test('POST NEW ARTICLE - status 201 - post a new article object formatted properly, with the following properties {author, title, article_id, body, topic, created_at, votes} if the author & slug don\'t already exist in the database', () => {
             const postArticle = {
                 username: "JaneDoe",
-                name : "Claire",
+                name: "Claire",
                 title: "How I got into coding",
                 body: "'Tis a long story",
                 topic: "Life stories",
@@ -221,12 +228,12 @@ describe('/api', () => {
                     }))
                 })
 
-        }); 
+        });
 
         test('POST NEW ARTICLE - status 201 - the function still works and post a new article if the author already exists in the database', () => {
             const postArticleTwo = {
                 username: "butter_bridge",
-                name : "jonny",
+                name: "jonny",
                 title: "How I got into coding",
                 body: "'Tis a long story",
                 topic: "Life stories",
@@ -249,11 +256,11 @@ describe('/api', () => {
                     }))
                 })
         });
-        
+
         test('POST NEW ARTICLE - status 201 - the function still works and post a new article if the slug already exists in the database', () => {
             const postArticleTwo = {
                 username: "JaneDoe",
-                name : "Claire",
+                name: "Claire",
                 title: "How I got into coding",
                 body: "'Tis a long story",
                 topic: "Life stories",
@@ -271,11 +278,11 @@ describe('/api', () => {
                         body: "'Tis a long story",
                         topic: "mitch",
                         created_at: expect.any(String),
-                        comments_count : 0,
+                        comments_count: 0,
                         votes: expect.any(Number)
                     }))
                 })
-        }); 
+        });
 
         test('ERROR GET ARTICLE BY ID - 404 - Invalid parametric endpoint input, the path is correct, but the input does not correspond to anything in the database', () => {
             return request(app)
@@ -320,18 +327,18 @@ describe('/api', () => {
                 .expect(400)
                 .then(() => {
                     return request(app)
-                    .get('/api/articles/1')
-                    .expect(200)
-                    .then((article) => {
-                        expect(article.body.article).toEqual(expect.objectContaining({
-                            votes: 100
-                        }))
-                    });
+                        .get('/api/articles/1')
+                        .expect(200)
+                        .then((article) => {
+                            expect(article.body.article).toEqual(expect.objectContaining({
+                                votes: 100
+                            }))
+                        });
                 });
         });
 
         test('ERROR POST NEW ARTICLE - status 400 Bad request - the input object to create the new article in the database, with the ', () => {
-            
+
         });
     });
 
