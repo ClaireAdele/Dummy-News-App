@@ -1,4 +1,4 @@
-const { fetchArticleByID, removeArticleByID, modifyArticleByID, fetchAllArticles } = require('../models/articles.models.js')
+const { fetchArticleByID, removeArticleByID, modifyArticleByID, fetchAllArticles, addNewArticle } = require('../models/articles.models.js')
 
 exports.getArticleByID = (req, res, next) => {
     const { article_id } = req.params;
@@ -48,5 +48,14 @@ exports.getAllArticles = (req, res, next) => {
         res.send({ articles });
     }).catch((err) => {
         next(err);
+    });
+}
+
+exports.postNewArticle = (req, res, next) => {
+    const { username, name, title, body, topic, slug } = req.body;
+    addNewArticle(username, name, title, body, topic, slug).then((article) => {
+        res.status(201).send({article});
+    }).catch((err) => {
+        console.log(err);
     });
 }

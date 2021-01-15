@@ -194,6 +194,35 @@ describe('/api', () => {
                 });
         });
 
+        test('POST NEW ARTICLE - status 201 - post a new article object formatted properly, with the following properties {author, title, article_id, body, topic, created_at, votes}', () => {
+            const postArticle = {
+                username: "JaneDoe",
+                name : "Claire",
+                title: "How I got into coding",
+                body: "'Tis a long story",
+                topic: "Life stories",
+                slug: 'code'
+            }
+            return request(app)
+                .post('/api/articles')
+                .send(postArticle)
+                .expect(201)
+                .then((article) => {
+                    expect(article.body.article).toEqual(expect.objectContaining({
+                        author: "JaneDoe",
+                        title: "How I got into coding",
+                        article_id: expect.any(Number),
+                        body: "'Tis a long story",
+                        topic: "code",
+                        created_at: expect.any(String),
+                        votes: expect.any(Number)
+                    }))
+                })
+
+        }); 
+
+        //I am wondering if I should test for changes in other tables as well?
+
         test('ERROR GET ARTICLE BY ID - 404 - Invalid parametric endpoint input, the path is correct, but the input does not correspond to anything in the database', () => {
             return request(app)
                 .get('/api/articles/109')
@@ -227,6 +256,10 @@ describe('/api', () => {
                     expect(errorMessage.body).toEqual(
                         { "msg": "Incorrect request - request must be formatted to conform to following model : {inc_votes : vote_number}" })
                 });
+        });
+
+        test('ERROR POST NEW ARTICLE - status 400 Bad request - the input object to create the new article in the database, with the ', () => {
+            
         });
     });
 

@@ -74,3 +74,20 @@ exports.fetchAllArticles = (sort_by = 'created_at', order = 'asc', author, topic
             .returning('*')
     }
 }
+
+exports.addNewArticle = (username, name, title, body, topic, slug) => {
+    return connection('users')
+        .insert({ username, name })
+        .returning('*')
+        .then((user) => {
+            return connection('topics')
+                .insert({ description: topic, slug })
+                .returning('*')
+        }).then((insertedTopic) => {
+            return connection('articles')
+                .insert({ author: username, title, body, topic: slug })
+                .returning('*')
+        }).then(([article]) => {
+            return article
+        });
+}
