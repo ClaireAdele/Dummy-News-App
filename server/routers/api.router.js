@@ -10,8 +10,5 @@ apiRouter.use('/users', usersRouter);
 apiRouter.use('/articles', articlesRouter);
 apiRouter.use('/comments', commentsRouter);
 
-apiRouter.get('/', (req, res, next) => {
-    res.send({ message: 'api router working' });
-});
 
 module.exports = apiRouter;

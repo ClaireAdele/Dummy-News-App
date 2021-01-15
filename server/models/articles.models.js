@@ -24,6 +24,13 @@ exports.fetchArticleByID = (article_id) => {
 };
 
 exports.removeArticleByID = (article_id) => {
+    // return connection('articles')
+    // .del()
+    // .where('article_id', '=', article_id)
+    // .returning('*')
+    // .then((mystery) => {
+    //     console.log(mystery)
+    // })
     return connection
         .first('*')
         .from('articles')
@@ -39,7 +46,7 @@ exports.removeArticleByID = (article_id) => {
         });
 };
 
-exports.modifyArticleByID = (article_id, inc_votes) => {
+exports.modifyArticleByID = (article_id, inc_votes = 0) => {
     return connection('articles')
         .increment('votes', inc_votes)
         .where('article_id', '=', article_id)

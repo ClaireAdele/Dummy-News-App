@@ -17,13 +17,12 @@ exports.seed = function (knex) {
       return knex
         .insert(topicData)
         .into('topics')
-        .returning('*')
-    }).then((insertedTopics) => {
+    }).then(() => {
       return knex
         .insert(userData)
         .into('users')
         .returning('*')
-    }).then((insertedUsers) => {
+    }).then(() => {
       const updatedArticles = updateDate(articleData)
       return knex
         .insert(updatedArticles)
@@ -37,6 +36,5 @@ exports.seed = function (knex) {
       return knex
         .insert(updatedComments)
         .into("comments")
-        .returning("*")
     })
 };

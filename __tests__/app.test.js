@@ -111,6 +111,7 @@ describe('/api', () => {
                 });
         });
 
+        
         test.skip('PATCH ARTICLE VOTE PROPERTY BY ID - status 201 - the number of votes cannot go below zero', () => {
             const incrementVote = { inc_votes: -110 }
             return request(app)
@@ -309,6 +310,24 @@ describe('/api', () => {
                 .then((errorMessage) => {
                     expect(errorMessage.body).toEqual(
                         { "msg": "Incorrect request - request must be formatted to conform to following model : {inc_votes : vote_number}" })
+                });
+        });
+
+        test('ERROR PATCH ARTICLE VOTE PROPERTY BY ID - status 400 Bad Request - when an error is sent, the vote property is not incremented at all', () => {
+            const wrongReq = { 'wrong input': 'is not going to work' }
+            return request(app)
+                .patch('/api/articles/1')
+                .send(wrongReq)
+                .expect(400)
+                .then(() => {
+                    return request(app)
+                    .get('/api/articles/1')
+                    .expect(200)
+                    .then((article) => {
+                        expect(article.body.article).toEqual(expect.objectContaining({
+                            votes: 100
+                        }))
+                    });
                 });
         });
 

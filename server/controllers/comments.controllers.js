@@ -9,9 +9,7 @@ exports.postCommentOnSelectedArticle = (req, res, next) => {
             return Promise.reject({ status: 404, msg: 'Not Found - can\'t post comment if article_id does not exist in database' });
         }
         res.status(201).send({ comment });
-    }).catch((err) => {
-        next(err);
-    });
+    }).catch(next);
 }
 
 exports.getAllCommentsByArticle = (req, res, next) => {
@@ -22,7 +20,5 @@ exports.getAllCommentsByArticle = (req, res, next) => {
             return Promise.reject({ status: 404, msg: 'Not Found - can\'t return comments if article_id does not exist in database' });
         }
         res.send({ comments });
-    }).catch((err) => {
-        next(err);
-    })
+    }).catch(next);
 }

@@ -3,16 +3,12 @@ const articlesRouter = express.Router({ mergeParams: true });
 const { getArticleByID, deleteArticleByID, patchArticleByID, getAllArticles, postNewArticle } = require('../controllers/articles.controllers.js')
 const commentsRouter = require('./comments.router.js')
 
-articlesRouter.get('/:article_id', getArticleByID);
-articlesRouter.get('/', getAllArticles)
-articlesRouter.delete('/:article_id', deleteArticleByID);
-articlesRouter.patch('/:article_id', patchArticleByID);
-articlesRouter.post('/', postNewArticle);
+articlesRouter.route('/:article_id').get(getArticleByID);
+articlesRouter.route('/').get(getAllArticles)
+articlesRouter.route('/:article_id').delete(deleteArticleByID);
+articlesRouter.route('/:article_id').patch(patchArticleByID);
+articlesRouter.route('/').post(postNewArticle);
 
 articlesRouter.use('/:article_id/comments', commentsRouter);
-
-articlesRouter.get('/', (req, res, next) => {
-    res.send({ message: 'articles router working' });
-});
 
 module.exports = articlesRouter;

@@ -7,9 +7,7 @@ exports.getArticleByID = (req, res, next) => {
             return Promise.reject({ status: 404, msg: 'Not Found - article_id does not exist in database' })
         }
         res.send({ article });
-    }).catch((err) => {
-        next(err);
-    });
+    }).catch(next);
 }
 
 exports.deleteArticleByID = (req, res, next) => {
@@ -19,9 +17,7 @@ exports.deleteArticleByID = (req, res, next) => {
             return Promise.reject({ status: 404, msg: 'Not Found - can\'t delete article if article_id does not exist in database' })
         }
         res.sendStatus(204);
-    }).catch((err) => {
-        next(err);
-    });
+    }).catch(next)
 }
 
 exports.patchArticleByID = (req, res, next) => {
@@ -36,9 +32,7 @@ exports.patchArticleByID = (req, res, next) => {
                 return Promise.reject({ status: 404, msg: 'Not Found - can\'t patch article if article_id does not exist in database' })
             }
             res.status(201).send({ article });
-        }).catch((err) => {
-            next(err);
-        });
+        }).catch(next);
 }
 
 exports.getAllArticles = (req, res, next) => {
@@ -46,16 +40,12 @@ exports.getAllArticles = (req, res, next) => {
 
     fetchAllArticles(sort_by, order, author, topic).then((articles) => {
         res.send({ articles });
-    }).catch((err) => {
-        next(err);
-    });
+    }).catch(next)
 }
 
 exports.postNewArticle = (req, res, next) => {
     const { username, name, title, body, topic, slug } = req.body;
     addNewArticle(username, name, title, body, topic, slug).then((article) => {
         res.status(201).send({article});
-    }).catch((err) => {
-        console.log(err);
-    });
+    }).catch(next);
 }
