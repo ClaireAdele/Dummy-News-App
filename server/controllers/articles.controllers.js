@@ -4,7 +4,7 @@ exports.getArticleByID = (req, res, next) => {
     const { article_id } = req.params;
     fetchArticleByID(article_id).then((article) => {
         if (!article) {
-            return Promise.reject({ status: 404, msg: 'Not Found - article_id does not exist in database' })
+            return Promise.reject({ status: 400, msg: "Not Found - Bad request - article_id does not exist in database" })
         }
         res.send({ article });
     }).catch(next);
@@ -31,7 +31,7 @@ exports.patchArticleByID = (req, res, next) => {
             if (!article) {
                 return Promise.reject({ status: 404, msg: 'Not Found - can\'t patch article if article_id does not exist in database' })
             }
-            res.status(201).send({ article });
+            res.send({ article });
         }).catch(next);
 }
 
@@ -47,7 +47,5 @@ exports.postNewArticle = (req, res, next) => {
     const { username, name, title, body, topic, slug } = req.body;
     addNewArticle(username, name, title, body, topic, slug).then((article) => {
         res.status(201).send({article});
-    }).catch((err) => {
-        console.log(err)
-    });
+    }).catch(next)
 }

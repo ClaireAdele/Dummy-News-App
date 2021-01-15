@@ -57,8 +57,37 @@ exports.modifyArticleByID = (article_id, inc_votes = 0) => {
         });
 }
 
-exports.fetchAllArticles = (sort_by = 'created_at', order = 'desc', author, topic) => {
+const checkIfTopicExists = (topic) => {
+    return connection
+    .select('*')
+    .from('topics')
+    .where('topic', '=', topic)
+    .returning('*')
+    .then((topic) => {
+        if (!topic) {
+            return Promise.reject({ status: 404, msg: 'Not Found - the topic entered does not match any topics in the database' })
+        } else {
+            return author;
+        }
+    });
+}
 
+const checkIfAuthorExists = (author) => {
+    return connection
+    .select('*')
+    .from('users')
+    .where('username', '=', author)
+    .returning('*')
+    .then((author) => {
+        if (!author) {
+            return Promise.reject({ status: 404, msg: 'Not Found - the author entered does not match any authors in the database' })
+        } else {
+            return author;
+        }
+    })
+}
+
+exports.fetchAllArticles = (sort_by = 'created_at', order = 'desc', author, topic) => {
     if (!topic && !author) {
         return connection
             .select('*')
@@ -73,6 +102,13 @@ exports.fetchAllArticles = (sort_by = 'created_at', order = 'desc', author, topi
             .where('topic', '=', topic)
             .orderBy(sort_by, order)
             .returning('*')
+            .then((articles) => {
+                if(articles.length === 0) {
+                    return Promise.reject({ status: 404, msg: 'Not Found - the topic entered does not match any topics in the database' });
+                } else {
+                    return articles;
+                }
+            })
     }
     if (author) {
         return connection
@@ -81,6 +117,13 @@ exports.fetchAllArticles = (sort_by = 'created_at', order = 'desc', author, topi
             .where('author', '=', author)
             .orderBy(sort_by, order)
             .returning('*')
+            .then((articles) => {
+                if(articles.length === 0) {
+                    return Promise.reject({ status: 404, msg: 'Not Found - the author entered does not match any authors in the database' });
+                } else {
+                    return articles;
+                }
+            })
     }
 }
 

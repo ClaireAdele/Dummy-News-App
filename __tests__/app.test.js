@@ -64,21 +64,21 @@ describe('/api', () => {
                 .then(() => {
                     return request(app)
                         .get('/api/articles/1')
-                        .expect(404)
+                        .expect(400)
                 }).then((res) => {
-                    expect(res.body).toEqual({ "msg": "Not Found - article_id does not exist in database" }
+                    expect(res.body).toEqual({ "msg": "Not Found - Bad request - article_id does not exist in database" }
                     )
                 }).then(() => {
                     //once I have a comment endpoint in place, I can check that the comments are getting destroyed. They are, since no conflict, but I would like to be able to prove that through express.
                 })
         });
 
-        test('PATCH ARTICLE VOTE PROPERTY BY ID- status 201 - accepts a body formatted { inc_votes : number }, and increments the vote property of the article selected by the number specified if the number is positive', () => {
+        test('PATCH ARTICLE VOTE PROPERTY BY ID - status 201 - accepts a body formatted { inc_votes : number }, and increments the vote property of the article selected by the number specified if the number is positive', () => {
             const incrementVote = { inc_votes: 1 }
             return request(app)
                 .patch('/api/articles/1')
                 .send(incrementVote)
-                .expect(201)
+                .expect(200)
                 .then((patchedArticle) => {
                     expect(patchedArticle.body.article).toEqual(expect.objectContaining({
                         author: expect.any(String),
@@ -97,7 +97,7 @@ describe('/api', () => {
             return request(app)
                 .patch('/api/articles/1')
                 .send(incrementVote)
-                .expect(201)
+                .expect(200)
                 .then((patchedArticle) => {
                     expect(patchedArticle.body.article).toEqual(expect.objectContaining({
                         author: expect.any(String),
@@ -111,13 +111,12 @@ describe('/api', () => {
                 });
         });
 
-
         test.skip('PATCH ARTICLE VOTE PROPERTY BY ID - status 201 - the number of votes cannot go below zero', () => {
             const incrementVote = { inc_votes: -110 }
             return request(app)
                 .patch('/api/articles/1')
                 .send(incrementVote)
-                .expect(201)
+                .expect(200)
                 .then((patchedArticle) => {
                     expect(patchedArticle.body.article).toEqual(expect.objectContaining({
                         author: expect.any(String),
@@ -170,7 +169,7 @@ describe('/api', () => {
                     expect(articles.body.articles).toBeSortedBy('created_at', { ascending: true });
                     expect(articles.body.articles[0]).toEqual(expect.objectContaining({
                         article_id: 12
-                    }))
+                    }));
                 });
         });
 
@@ -284,13 +283,35 @@ describe('/api', () => {
                 })
         });
 
+        test('ERROR GET ALL ARTICLES - status 404 - if a query is made to a topic that doesn\'t exist, return 404', () => {
+            return request(app)
+                .get('/api/articles?topic=bananas')
+                .expect(404)
+                .then((errorMessage) => {
+                    expect(errorMessage.body).toEqual({
+                        'msg': 'Not Found - the topic entered does not match any topics in the database'
+                    });
+                });
+        });
+
+        test('ERROR GET ALL ARTICLES - status 404 - if a query is made to a topic that doesn\'t exist, return 404', () => {
+            return request(app)
+                .get('/api/articles?author=bananas')
+                .expect(404)
+                .then((errorMessage) => {
+                    expect(errorMessage.body).toEqual({
+                        'msg': 'Not Found - the author entered does not match any authors in the database'
+                    });
+                });
+        });
+
         test('ERROR GET ARTICLE BY ID - 404 - Invalid parametric endpoint input, the path is correct, but the input does not correspond to anything in the database', () => {
             return request(app)
                 .get('/api/articles/109')
-                .expect(404)
+                .expect(400)
                 .then((errorMessage) => {
                     expect(errorMessage.body).toEqual(
-                        { "msg": "Not Found - article_id does not exist in database" }
+                        { "msg": "Not Found - Bad request - article_id does not exist in database" }
 
                     );
                 });
@@ -340,6 +361,7 @@ describe('/api', () => {
         test('ERROR POST NEW ARTICLE - status 400 Bad request - the input object to create the new article in the database, with the ', () => {
 
         });
+
     });
 
     describe('/api/articles/comments', () => {
@@ -379,21 +401,21 @@ describe('/api', () => {
                 });
         });
 
-        test('GET ALL THE COMMENTS FOR ARTICLE SELECTED BY ID - status 200 - comments are sorted according to their created_at property by default', () => {
+        test('GET ALL THE COMMENTS FOR ARTICLE SELECTED BY ID - status 200 - comments are sorted according to their created_at property in descending order by default', () => {
             return request(app)
                 .get('/api/articles/1/comments')
                 .expect(200)
                 .then((comments) => {
-                    expect(comments).toBeSortedBy('created_at');
+                    expect(comments).toBeSortedBy('created_at', {descending : true});
                 });
         });
 
         test('GET ALL THE COMMENTS FOR ARTICLE SELECTED BY ID - status 200 - comments are sorted according to their created_at property by default, and respond to query for asc or desc order', () => {
             return request(app)
-                .get('/api/articles/1/comments?order=desc')
+                .get('/api/articles/1/comments?order=asc')
                 .expect(200)
                 .then((comments) => {
-                    expect(comments).toBeSortedBy('created_at', { descending: true });
+                    expect(comments).toBeSortedBy('created_at', { ascending: true });
                 });
         });
 
@@ -432,6 +454,15 @@ describe('/api', () => {
                 .expect(404)
                 .then((errorMessage) => {
                     expect(errorMessage.body).toEqual({ msg: 'Not Found - can\'t return comments if article_id does not exist in database' })
+                });
+        });
+
+        test('ERROR - status 404 - if a user inputs a url that does not correspond to en endpoint', () => {
+            return request(app)
+                .get('/api/articles/comments/not-a-route')
+                .expect(404)
+                .then(({ body }) => {
+                    expect(body.message).toBe('Not Found - the url entered does not match any content');
                 });
         });
     });//describe
