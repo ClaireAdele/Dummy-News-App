@@ -6,6 +6,8 @@ const { handlesInvalidPath } = require('../controllers/error.controllers');
 
 usersRouter.route('/:username').get(getUserByUsername);
 
-usersRouter.all('/*', handlesInvalidPath);
+usersRouter.route('/*')
+.all(handlesInvalidPath)
+.all(handlesInvalidMethod);
 
 module.exports = usersRouter;
