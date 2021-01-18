@@ -27,10 +27,10 @@ describe('/api', () => {
                 const methodPromise = invalidMethods.map((method) => {
                     return request(app)
                     [method]('/api/topics')
-                    .expect(405)
-                    .then((errorMessage) => {
-                        expect(errorMessage.body).toEqual({ 'message' : 'Method not allowed'})
-                    });
+                        .expect(405)
+                        .then((errorMessage) => {
+                            expect(errorMessage.body).toEqual({ 'message': 'Method not allowed' })
+                        });
                 });
                 return Promise.all(methodPromise);
             });
@@ -52,16 +52,25 @@ describe('/api', () => {
                 });
         });
 
+        test('ERROR GET USER BY USERNAME - status 404 - Username does not exist in the database', () => {
+            return request(app)
+                .get('/api/users/not-a-user')
+                .expect(404)
+                .then((errorMessage) => {
+                    expect(errorMessage.body).toEqual({ 'msg': 'The username entered does not exist in the database' });
+                });
+        });
+
         describe('INVALID METHODS', () => {
             test('ERROR INVALID METHOD - status 405 - the user tried to use a method that is not defined on the router', () => {
                 const invalidMethods = ['put', 'patch', 'post', 'delete']
                 const methodPromise = invalidMethods.map((method) => {
                     return request(app)
                     [method]('/api/users/butter_bridge')
-                    .expect(405)
-                    .then((errorMessage) => {
-                        expect(errorMessage.body).toEqual({ 'message' : 'Method not allowed'})
-                    });
+                        .expect(405)
+                        .then((errorMessage) => {
+                            expect(errorMessage.body).toEqual({ 'message': 'Method not allowed' })
+                        });
                 });
                 return Promise.all(methodPromise);
             });
@@ -406,10 +415,10 @@ describe('/api', () => {
                 const methodPromise = invalidMethods.map((method) => {
                     return request(app)
                     [method]('/api/articles')
-                    .expect(405)
-                    .then((errorMessage) => {
-                        expect(errorMessage.body).toEqual({ 'message' : 'Method not allowed'})
-                    });
+                        .expect(405)
+                        .then((errorMessage) => {
+                            expect(errorMessage.body).toEqual({ 'message': 'Method not allowed' })
+                        });
                 });
                 return Promise.all(methodPromise);
             });
@@ -419,11 +428,10 @@ describe('/api', () => {
                 const methodPromise = invalidMethods.map((method) => {
                     return request(app)
                     [method]('/api/articles/1')
-                    .expect(405)
-                    .then((errorMessage) => {
-                        console.log(errorMessage.body)
-                        expect(errorMessage.body).toEqual({ 'message' : 'Method not allowed'})
-                    });
+                        .expect(405)
+                        .then((errorMessage) => {
+                            expect(errorMessage.body).toEqual({ 'message': 'Method not allowed' })
+                        });
                 });
                 return Promise.all(methodPromise);
             });
@@ -472,7 +480,7 @@ describe('/api', () => {
                 .get('/api/articles/1/comments')
                 .expect(200)
                 .then((comments) => {
-                    expect(comments).toBeSortedBy('created_at', {descending : true});
+                    expect(comments).toBeSortedBy('created_at', { descending: true });
                 });
         });
 
@@ -552,10 +560,10 @@ describe('/api', () => {
                 const methodPromise = invalidMethods.map((method) => {
                     return request(app)
                     [method]('/api/articles/1/comments')
-                    .expect(405)
-                    .then((errorMessage) => {
-                        expect(errorMessage.body).toEqual({ 'message' : 'Method not allowed'})
-                    });
+                        .expect(405)
+                        .then((errorMessage) => {
+                            expect(errorMessage.body).toEqual({ 'message': 'Method not allowed' })
+                        });
                 });
                 return Promise.all(methodPromise);
             });
@@ -569,7 +577,7 @@ describe('/not-a-route', () => {
         return request(app)
             .get('/not-a-route')
             .expect(404)
-            .then(({body}) => {
+            .then(({ body }) => {
                 expect(body.message).toBe('Not Found - the url entered does not match any content');
             });
     });
