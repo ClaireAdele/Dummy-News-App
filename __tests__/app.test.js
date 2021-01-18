@@ -514,7 +514,7 @@ describe('/api', () => {
                 })
         });
 
-        test('ERROR POST COMMENTS ON ARTICLE SELECTED BY ID - status 404 Not Found - the article_id on the request does not correspond to an existing article, and thus, can\'t post a comment', () => {
+        test('ERROR POST COMMENTS ON ARTICLE SELECTED BY ID - status 400 Bad Request - the article_id on the request is not a number', () => {
             const input = { username: "icellusedkars", body: "I think therefore I am" };
 
             return request(app)
