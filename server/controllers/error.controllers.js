@@ -12,11 +12,17 @@ exports.handlesInvalidInput = (err, req, res, next) => {
     }
 }
 
-exports.handlesInvalidPath = (err, req, res, next) => {
+exports.handlesUnknownError = (err, req, res, next) => {
+    res.status(500).send({ 'message' : 'Error unknown - try again later'});
+}
+
+exports.handlesInvalidPath = (req, res, next) => {
     res.status(404).send({ 'message': 'Not Found - the url entered does not match any content' });
-    next(err);
 }
 
 exports.handlesInvalidMethod = (req, res, next) => {
-    res.status(405).send({ 'message' : 'Method not allowed'});
+    res.status(405).send({ 'message' : 'Method not allowed'})
 }
+
+
+

@@ -4,7 +4,7 @@ exports.getArticleByID = (req, res, next) => {
     const { article_id } = req.params;
     fetchArticleByID(article_id).then((article) => {
         if (!article) {
-            return Promise.reject({ status: 400, msg: "Not Found - Bad request - article_id does not exist in database" })
+            return Promise.reject({ status: 400, msg: "Not Found - Bad request - article_id does not exist in database" });
         }
         res.send({ article });
     }).catch(next);

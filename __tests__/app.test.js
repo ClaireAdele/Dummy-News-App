@@ -20,6 +20,21 @@ describe('/api', () => {
                     }));
                 });
         });
+
+        describe('INVALID METHODS', () => {
+            test('ERROR INVALID METHOD - status 405 - the user tried to use a method that is not defined on the router', () => {
+                const invalidMethods = ['put', 'patch', 'post', 'delete']
+                const methodPromise = invalidMethods.map((method) => {
+                    return request(app)
+                    [method]('/api/topics')
+                    .expect(405)
+                    .then((errorMessage) => {
+                        expect(errorMessage.body).toEqual({ 'message' : 'Method not allowed'})
+                    });
+                });
+                return Promise.all(methodPromise);
+            });
+        })
     });
 
     describe('/api/users', () => {
@@ -36,6 +51,21 @@ describe('/api', () => {
                         })
                 });
         });
+
+        describe('INVALID METHODS', () => {
+            test('ERROR INVALID METHOD - status 405 - the user tried to use a method that is not defined on the router', () => {
+                const invalidMethods = ['put', 'patch', 'post', 'delete']
+                const methodPromise = invalidMethods.map((method) => {
+                    return request(app)
+                    [method]('/api/users/butter_bridge')
+                    .expect(405)
+                    .then((errorMessage) => {
+                        expect(errorMessage.body).toEqual({ 'message' : 'Method not allowed'})
+                    });
+                });
+                return Promise.all(methodPromise);
+            });
+        })
     });
 
     describe('/api/articles', () => {
@@ -317,6 +347,18 @@ describe('/api', () => {
                 });
         });
 
+        test('ERROR GET ARTICLE BY ID - 404 - Invalid parametric endpoint input, article_id is not a number', () => {
+            return request(app)
+                .get('/api/articles/bananas')
+                .expect(400)
+                .then((errorMessage) => {
+                    expect(errorMessage.body).toEqual(
+                        { "msg": "Not Found - Bad request - article_id must be a number and exist in the database" }
+
+                    );
+                });
+        });
+
         test('ERROR DELETE ARTICLE BY ID - 404 - Invalid parametric endpoint input, the path is correct, but the input does not correspond to anything in the database', () => {
             return request(app)
                 .delete('/api/articles/109')
@@ -358,10 +400,34 @@ describe('/api', () => {
                 });
         });
 
-        test('ERROR POST NEW ARTICLE - status 400 Bad request - the input object to create the new article in the database, with the ', () => {
+        describe('INVALID METHODS', () => {
+            test('ERROR INVALID METHOD - status 405 - the user tried to use a method that is not defined on the router for url /api/articles', () => {
+                const invalidMethods = ['put', 'patch', 'delete']
+                const methodPromise = invalidMethods.map((method) => {
+                    return request(app)
+                    [method]('/api/articles')
+                    .expect(405)
+                    .then((errorMessage) => {
+                        expect(errorMessage.body).toEqual({ 'message' : 'Method not allowed'})
+                    });
+                });
+                return Promise.all(methodPromise);
+            });
 
+            test('ERROR INVALID METHOD - status 405 - the user tried to use a method that is not defined on the router for url /api/articles/:article', () => {
+                const invalidMethods = ['put', 'post']
+                const methodPromise = invalidMethods.map((method) => {
+                    return request(app)
+                    [method]('/api/articles/1')
+                    .expect(405)
+                    .then((errorMessage) => {
+                        console.log(errorMessage.body)
+                        expect(errorMessage.body).toEqual({ 'message' : 'Method not allowed'})
+                    });
+                });
+                return Promise.all(methodPromise);
+            });
         });
-
     });
 
     describe('/api/articles/comments', () => {
@@ -448,6 +514,20 @@ describe('/api', () => {
                 })
         });
 
+        test('ERROR POST COMMENTS ON ARTICLE SELECTED BY ID - status 404 Not Found - the article_id on the request does not correspond to an existing article, and thus, can\'t post a comment', () => {
+            const input = { username: "icellusedkars", body: "I think therefore I am" };
+
+            return request(app)
+                .post('/api/articles/not-a-valid-id/comments')
+                .send(input)
+                .expect(400)
+                .then((errorMessage) => {
+                    expect(errorMessage.body).toEqual(
+                        { "msg": 'Bad request - article_id must be a number' })
+                })
+        });
+
+
         test('ERROR GET ALL THE COMMENTS FOR ARTICLE SELECTED BY ID - status 404 Not Found - the article_id on the request does not correspond to an existing article, and thus, can\'t get the comments associated with it', () => {
             return request(app)
                 .get('/api/articles/10000/comments')
@@ -465,8 +545,23 @@ describe('/api', () => {
                     expect(body.message).toBe('Not Found - the url entered does not match any content');
                 });
         });
-    });//describe
-});//describe
+
+        describe('INVALID METHODS', () => {
+            test('ERROR INVALID METHOD - status 405 - the user tried to use a method that is not defined on the router for the /api/articles/:article_id/comments', () => {
+                const invalidMethods = ['put', 'patch']
+                const methodPromise = invalidMethods.map((method) => {
+                    return request(app)
+                    [method]('/api/articles/1/comments')
+                    .expect(405)
+                    .then((errorMessage) => {
+                        expect(errorMessage.body).toEqual({ 'message' : 'Method not allowed'})
+                    });
+                });
+                return Promise.all(methodPromise);
+            });
+        })
+    }); //describe
+});
 
 
 describe('/not-a-route', () => {
@@ -474,7 +569,7 @@ describe('/not-a-route', () => {
         return request(app)
             .get('/not-a-route')
             .expect(404)
-            .then(({ body }) => {
+            .then(({body}) => {
                 expect(body.message).toBe('Not Found - the url entered does not match any content');
             });
     });

@@ -1,6 +1,9 @@
 const connection = require('../../connection.js');
 
 exports.fetchArticleByID = (article_id) => {
+    if(isNaN(article_id)) {
+        return Promise.reject({ status: 400, msg: "Not Found - Bad request - article_id must be a number and exist in the database" });
+    } else {
     return connection
         .first('*')
         .from('articles')
@@ -22,6 +25,7 @@ exports.fetchArticleByID = (article_id) => {
             }
             return article;
         })
+    }
 };
 
 exports.removeArticleByID = (article_id) => {

@@ -11,8 +11,8 @@ apiRouter.use('/users', usersRouter);
 apiRouter.use('/articles', articlesRouter);
 apiRouter.use('/comments', commentsRouter);
 
-apiRouter.route('/*')
-.all(handlesInvalidPath)
-.all(handlesInvalidMethod);
+// apiRouter.all('/*', handlesInvalidPath)
+// apiRouter.all('/*', handlesInvalidMethod)
+
 
 module.exports = apiRouter;

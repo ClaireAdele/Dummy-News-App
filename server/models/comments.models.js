@@ -3,6 +3,8 @@ const connection = require('../../connection.js');
 exports.writeCommentOnSelectedArticle = (article_id, username, body) => {
     if (!username || !body) {
         return Promise.reject({ status: 400, msg: "Incorrect request - request must be formatted to conform to following model : {username, body}" });
+    } else if (isNaN(article_id)) {
+        return Promise.reject({ status: 400, msg: "Bad request - article_id must be a number" })
     } else {
         return connection
             .first('*')
