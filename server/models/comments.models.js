@@ -48,3 +48,17 @@ exports.fetchAllCommentsByArticle = (article_id, sort_by = 'created_at', order =
             }
         });
 }
+
+exports.modifyCommentByID = (comment_id, inc_votes = 0) => {
+    if(isNaN(inc_votes) || isNaN(comment_id)) {
+        return Promise.reject({status : 400, msg : "Bad request - the comment_id and the inc_votes request must both be numbers" });
+    }
+    return connection('comments')
+    .increment('votes', inc_votes)
+    .where('comment_id', '=', comment_id)
+    .returning('*')
+    .then(([comment]) => {
+        return comment;
+    })
+
+}

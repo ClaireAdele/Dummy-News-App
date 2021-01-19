@@ -1,4 +1,4 @@
-const { writeCommentOnSelectedArticle, fetchAllCommentsByArticle } = require('../models/comments.models.js');
+const { writeCommentOnSelectedArticle, fetchAllCommentsByArticle, modifyCommentByID } = require('../models/comments.models.js');
 
 exports.postCommentOnSelectedArticle = (req, res, next) => {
     const { article_id } = req.params;
@@ -21,4 +21,12 @@ exports.getAllCommentsByArticle = (req, res, next) => {
         }
         res.send({ comments });
     }).catch(next);
+}
+
+exports.patchCommentByID = (req, res, next) => {
+    const { comment_id } = req.params;
+    const { inc_votes } = req.body;
+    modifyCommentByID(comment_id, inc_votes).then((comment) => {
+        res.status(201).send({comment})
+    }).catch(next)
 }

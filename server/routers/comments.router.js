@@ -1,7 +1,7 @@
 const express = require('express');
 const commentsRouter = express.Router({ mergeParams: true });
-const { postCommentOnSelectedArticle, getAllCommentsByArticle } = require('../controllers/comments.controllers')
-const { handlesInvalidPath, handlesInvalidMethod, handlesInvalidInput } = require('../controllers/error.controllers');
+const { postCommentOnSelectedArticle, getAllCommentsByArticle, patchCommentByID } = require('../controllers/comments.controllers')
+const { handlesInvalidMethod } = require('../controllers/error.controllers');
 
 
 commentsRouter.route('/')
@@ -9,7 +9,7 @@ commentsRouter.route('/')
 .get(getAllCommentsByArticle)
 .all(handlesInvalidMethod)
 
-
-// commentsRouter.all('/*', handlesInvalidPath);
+commentsRouter.route('/:comment_id')
+.patch(patchCommentByID)
 
 module.exports = commentsRouter;

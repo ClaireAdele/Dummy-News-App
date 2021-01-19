@@ -568,7 +568,72 @@ describe('/api', () => {
                 return Promise.all(methodPromise);
             });
         })
-    }); //describe
+    });
+
+    describe('/api/comments', () => {
+        test('PATCH COMMENT BY COMMENT ID - status 201 - the request body shoud accept { inc_votes: newVote } and the function should increment the votes property by the number specified', () => {
+            const incrementVote = { inc_votes: 10 }
+            return request(app)
+                .patch('/api/comments/1')
+                .send(incrementVote)
+                .expect(201)
+                .then((patchedComment) => {
+                    expect(patchedComment.body.comment).toEqual(expect.objectContaining({
+                        votes: 26
+                    }))
+                });
+        });
+
+        test('PATCH COMMENT BY COMMENT ID - status 201 - the request body shoud accept { inc_votes: newVote } and the function should decrement the votes property by the number specified', () => {
+            const incrementVote = { inc_votes: -10 }
+            return request(app)
+                .patch('/api/comments/1')
+                .send(incrementVote)
+                .expect(201)
+                .then((patchedComment) => {
+                    expect(patchedComment.body.comment).toEqual(expect.objectContaining({
+                        votes: 6
+                    }))
+                });
+        });
+
+        test('PATCH COMMENT BY COMMENT ID - status 400 - if the property inc_votes is not given a numeric value, the server should throw an error and not alter the votes property at all', () => {
+            const incrementVote = { inc_votes: 'not a number' }
+            return request(app)
+                .patch('/api/comments/1')
+                .send(incrementVote)
+                .expect(400)
+                .then((errorMessage) => {
+                    expect(errorMessage.body).toEqual({
+                        'msg': 'Bad request - the comment_id and the inc_votes request must both be numbers'
+                    });
+                }).then(() => {
+                    return request(app)
+                        .get('/api/articles/9/comments')
+                        .expect(200)
+                }).then((comments) => {
+                    const commentsArr = comments.body.comments;
+                    const commentNotPatched = commentsArr.filter((comment) => {
+                        return comment.comment_id === 1;
+                    })
+                    console.log(commentNotPatched)
+                    expect(commentNotPatched[0].votes).toBe(16);
+                });
+        });
+
+        test('PATCH COMMENT BY COMMENT ID - status 400 - if the article_id is not a numeric value, the server should throw the appropriate error', () => {
+            const incrementVote = { inc_votes: '10' }
+            return request(app)
+                .patch('/api/comments/pineapple')
+                .send(incrementVote)
+                .expect(400)
+                .then((errorMessage) => {
+                    expect(errorMessage.body).toEqual({
+                        'msg': 'Bad request - the comment_id and the inc_votes request must both be numbers'
+                    });
+                });
+        });
+    });
 });
 
 
@@ -586,3 +651,4 @@ describe('/not-a-route', () => {
 afterAll(() => {
     return connection.destroy();
 });
+

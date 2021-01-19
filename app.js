@@ -16,7 +16,7 @@ module.exports = app;
 
 // what remains to be done :
 //- I need to write the last couple of functions and catch errors as well:
-// PATCH /api/comments/:comment_id
+
 // DELETE /api/comments/:comment_id
 
 // GET /api ??

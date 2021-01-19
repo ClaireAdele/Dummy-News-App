@@ -10,7 +10,8 @@
     "migrate-make": "knex migrate:make",
     "migrate-latest": "knex migrate:latest",
     "migrate-rollback": "knex migrate:rollback",
-    "dev": "nodemon server_express/listen.js"
+    "dev": "nodemon server_express/listen.js",
+    "start-psql": "sudo service postgresql start"
   },
   "repository": {
     "type": "git",
