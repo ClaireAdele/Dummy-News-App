@@ -29,26 +29,16 @@ exports.fetchArticleByID = (article_id) => {
 };
 
 exports.removeArticleByID = (article_id) => {
-    // return connection('articles')
-    // .del()
-    // .where('article_id', '=', article_id)
-    // .returning('*')
-    // .then((mystery) => {
-    //     console.log(mystery)
-    // })
-    return connection
-        .first('*')
-        .from('articles')
-        .where('article_id', '=', article_id)
-        .then((article) => {
-            if (article) {
-                return connection('articles')
-                    .del()
-                    .where('article_id', '=', article_id)
-            } else {
-                return article;
-            }
-        });
+    if(isNaN(article_id)) {
+        return Promise.reject({status : 400, msg : "Bad request - article_id must be a number"})
+    }
+    return connection('articles')
+    .del()
+    .where('article_id', '=', article_id)
+    .returning('*')
+    .then(([deletedArticle]) => {
+        return deletedArticle;
+    });
 };
 
 exports.modifyArticleByID = (article_id, inc_votes = 0) => {
@@ -61,35 +51,6 @@ exports.modifyArticleByID = (article_id, inc_votes = 0) => {
         });
 }
 
-const checkIfTopicExists = (topic) => {
-    return connection
-    .select('*')
-    .from('topics')
-    .where('topic', '=', topic)
-    .returning('*')
-    .then((topic) => {
-        if (!topic) {
-            return Promise.reject({ status: 404, msg: 'Not Found - the topic entered does not match any topics in the database' })
-        } else {
-            return author;
-        }
-    });
-}
-
-const checkIfAuthorExists = (author) => {
-    return connection
-    .select('*')
-    .from('users')
-    .where('username', '=', author)
-    .returning('*')
-    .then((author) => {
-        if (!author) {
-            return Promise.reject({ status: 404, msg: 'Not Found - the author entered does not match any authors in the database' })
-        } else {
-            return author;
-        }
-    })
-}
 
 exports.fetchAllArticles = (sort_by = 'created_at', order = 'desc', author, topic) => {
     if (!topic && !author) {

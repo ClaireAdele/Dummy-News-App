@@ -107,9 +107,7 @@ describe('/api', () => {
                 }).then((res) => {
                     expect(res.body).toEqual({ "msg": "Not Found - Bad request - article_id does not exist in database" }
                     )
-                }).then(() => {
-                    //once I have a comment endpoint in place, I can check that the comments are getting destroyed. They are, since no conflict, but I would like to be able to prove that through express.
-                })
+                });
         });
 
         test('PATCH ARTICLE VOTE PROPERTY BY ID - status 201 - accepts a body formatted { inc_votes : number }, and increments the vote property of the article selected by the number specified if the number is positive', () => {
@@ -616,7 +614,6 @@ describe('/api', () => {
                     const commentNotPatched = commentsArr.filter((comment) => {
                         return comment.comment_id === 1;
                     })
-                    console.log(commentNotPatched)
                     expect(commentNotPatched[0].votes).toBe(16);
                 });
         });
