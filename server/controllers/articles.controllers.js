@@ -47,7 +47,7 @@ exports.getAllArticles = (req, res, next) => {
     }).catch(next)
 }
 
-//error-handling to be done
+//Creates a new article in the database, with the appropriate username, name, title, body, topic and slug properties.
 exports.postNewArticle = (req, res, next) => {
     const { username, name, title, body, topic, slug } = req.body;
     addNewArticle(username, name, title, body, topic, slug).then((article) => {
