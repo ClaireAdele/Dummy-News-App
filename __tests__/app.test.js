@@ -103,9 +103,9 @@ describe('/api', () => {
                 .then(() => {
                     return request(app)
                         .get('/api/articles/1')
-                        .expect(400)
+                        .expect(404)
                 }).then((res) => {
-                    expect(res.body).toEqual({ "msg": "Not Found - Bad request - article_id does not exist in database" }
+                    expect(res.body).toEqual({ "msg": "Not Found - article_id does not exist in database" }
                     )
                 });
         });
@@ -144,25 +144,6 @@ describe('/api', () => {
                         topic: expect.any(String),
                         created_at: expect.any(String),
                         votes: 90,
-                    }))
-                });
-        });
-
-        test.skip('PATCH ARTICLE VOTE PROPERTY BY ID - status 201 - the number of votes cannot go below zero', () => {
-            const incrementVote = { inc_votes: -110 }
-            return request(app)
-                .patch('/api/articles/1')
-                .send(incrementVote)
-                .expect(200)
-                .then((patchedArticle) => {
-                    expect(patchedArticle.body.article).toEqual(expect.objectContaining({
-                        author: expect.any(String),
-                        title: expect.any(String),
-                        article_id: 1,
-                        body: expect.any(String),
-                        topic: expect.any(String),
-                        created_at: expect.any(String),
-                        votes: 0,
                     }))
                 });
         });
@@ -342,25 +323,25 @@ describe('/api', () => {
                 });
         });
 
-        test('ERROR GET ARTICLE BY ID - 404 - Invalid parametric endpoint input, the path is correct, but the input does not correspond to anything in the database', () => {
+        test('ERROR GET ARTICLE BY ID - status 404 - Invalid parametric endpoint input, the path is correct, but the input does not correspond to anything in the database', () => {
             return request(app)
                 .get('/api/articles/109')
-                .expect(400)
+                .expect(404)
                 .then((errorMessage) => {
                     expect(errorMessage.body).toEqual(
-                        { "msg": "Not Found - Bad request - article_id does not exist in database" }
+                        { "msg": "Not Found - article_id does not exist in database" }
 
                     );
                 });
         });
 
-        test('ERROR GET ARTICLE BY ID - 404 - Invalid parametric endpoint input, article_id is not a number', () => {
+        test('ERROR GET ARTICLE BY ID - status 400 - Invalid parametric endpoint input, article_id is not a number', () => {
             return request(app)
                 .get('/api/articles/bananas')
                 .expect(400)
                 .then((errorMessage) => {
                     expect(errorMessage.body).toEqual(
-                        { "msg": "Not Found - Bad request - article_id must be a number and exist in the database" }
+                        { "msg": "Bad request - article_id must be a number and exist in the database" }
 
                     );
                 });
@@ -378,7 +359,7 @@ describe('/api', () => {
         });
 
         test('ERROR PATCH ARTICLE VOTE PROPERTY BY ID - status 400 Bad Request - the body on the request is not formatted properly, and thus, can\'t patch the article object', () => {
-            const wrongReq = { 'wrong input': 'is not going to work' }
+            const wrongReq = { 'inc_votes': 'is not going to work' }
             return request(app)
                 .patch('/api/articles/1')
                 .send(wrongReq)
@@ -390,7 +371,7 @@ describe('/api', () => {
         });
 
         test('ERROR PATCH ARTICLE VOTE PROPERTY BY ID - status 400 Bad Request - when an error is sent, the vote property is not incremented at all', () => {
-            const wrongReq = { 'wrong input': 'is not going to work' }
+            const wrongReq = { 'inc_votes': 'is not going to work' }
             return request(app)
                 .patch('/api/articles/1')
                 .send(wrongReq)
@@ -509,9 +490,8 @@ describe('/api', () => {
 
         test('ERROR POST COMMENTS ON ARTICLE SELECTED BY ID - status 404 Not Found - the article_id on the request does not correspond to an existing article, and thus, can\'t post a comment', () => {
             const input = { username: "icellusedkars", body: "I think therefore I am" };
-
             return request(app)
-                .post('/api/articles/900000/comments')
+                .post('/api/articles/999999/comments')
                 .send(input)
                 .expect(404)
                 .then((errorMessage) => {
@@ -539,7 +519,7 @@ describe('/api', () => {
                 .get('/api/articles/10000/comments')
                 .expect(404)
                 .then((errorMessage) => {
-                    expect(errorMessage.body).toEqual({ msg: 'Not Found - can\'t return comments if article_id does not exist in database' })
+                    expect(errorMessage.body).toEqual({ msg: 'Not Found - can\'t get comments if article_id does not exist in database' })
                 });
         });
 
@@ -595,7 +575,7 @@ describe('/api', () => {
                 });
         });
 
-        test('PATCH COMMENT BY COMMENT ID - status 400 - if the property inc_votes is not given a numeric value, the server should throw an error and not alter the votes property at all', () => {
+        test('ERROR PATCH COMMENT BY COMMENT ID - status 400 - if the property inc_votes is not given a numeric value, the server should throw an error and not alter the votes property at all', () => {
             const incrementVote = { inc_votes: 'not a number' }
             return request(app)
                 .patch('/api/comments/1')
@@ -618,7 +598,7 @@ describe('/api', () => {
                 });
         });
 
-        test('PATCH COMMENT BY COMMENT ID - status 400 - if the article_id is not a numeric value, the server should throw the appropriate error', () => {
+        test('ERROR PATCH COMMENT BY COMMENT ID - status 400 - if the comment_id is not a numeric value, the server should throw the appropriate error', () => {
             const incrementVote = { inc_votes: '10' }
             return request(app)
                 .patch('/api/comments/pineapple')
@@ -630,6 +610,58 @@ describe('/api', () => {
                     });
                 });
         });
+
+        test('ERROR PATCH COMMENT BY COMMENT ID - status 400 - if the comment_id is not a numeric value, the server should throw the appropriate error', () => {
+            const incrementVote = { inc_votes: '10' }
+            return request(app)
+                .patch('/api/comments/90000')
+                .send(incrementVote)
+                .expect(404)
+                .then((errorMessage) => {
+                    expect(errorMessage.body).toEqual({
+                        'msg': 'Not Found - the comment_id does not correspond to a comment in the database'
+                    });
+                });
+        });
+
+        test('DELETE COMMENT BY ID - status 204 - should take a valid comment_id and return status 204', () => {
+            return request(app)
+            .delete('/api/comments/2')
+            .expect(204)
+        });
+
+        test('ERROR DELETE COMMENT BY ID - status 400 - it should return a status 400 if the comment_id is not a number', () => {
+            return request(app)
+            .delete('/api/comments/potatoes')
+            .expect(400)
+            .then((errorMessage) => {
+                expect(errorMessage.body).toEqual({'msg' : "Bad request - comment_id must be a number"})
+            })
+        });
+
+        test('ERROR DELETE COMMENT BY ID - status 404 - it should return a status 404 if the comment_id does not match a comment in the database', () => {
+            return request(app)
+            .delete('/api/comments/10000')
+            .expect(404)
+            .then((errorMessage) => {
+                expect(errorMessage.body).toEqual({'msg' : "Not Found - can't delete comment if comment_id does not exist in database"})
+            })
+        });
+
+        describe('INVALID METHODS', () => {
+            test('ERROR INVALID METHOD - status 405 - the user tried to use a method that is not defined on the router for the /api/comments/:comment_id', () => {
+                const invalidMethods = ['put', 'get', 'post']
+                const methodPromise = invalidMethods.map((method) => {
+                    return request(app)
+                    [method]('/api/comments/1')
+                        .expect(405)
+                        .then((errorMessage) => {
+                            expect(errorMessage.body).toEqual({ 'message': 'Method not allowed' })
+                        });
+                });
+                return Promise.all(methodPromise);
+            });
+        })
     });
 });
 
