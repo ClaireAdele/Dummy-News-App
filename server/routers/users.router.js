@@ -8,9 +8,4 @@ usersRouter.route('/:username')
 .get(getUserByUsername)
 .all(handlesInvalidMethod)
 
-
-// usersRouter.all('/*', handlesInvalidPath)
-
-
-
 module.exports = usersRouter;

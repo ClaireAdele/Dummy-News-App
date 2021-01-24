@@ -10,13 +10,10 @@ articlesRouter.route('/:article_id')
 .patch(patchArticleByID)
 .all(handlesInvalidMethod)
 
-
 articlesRouter.route('/')
 .get(getAllArticles)
 .post(postNewArticle)
 .all(handlesInvalidMethod)
-
-
 
 articlesRouter.use('/:article_id/comments', commentsRouter);
 
