@@ -76,7 +76,7 @@ exports.modifyArticleByID = (article_id, inc_votes = 0) => {
     }
 }
 
-//Gets all of the articles, sends them back ordered by their created_at property of no sort-by query is added onto the request body.
+//Gets all of the articles, sends them back ordered by their created_at property if no sort-by query is added onto the request body.
 //Takes up to four different types of parameters on the query: author, topic, order and sort_by. 
 //If author or topic entered do not exist in the database, sends back 404 Not Found.
 exports.fetchAllArticles = (sort_by = 'created_at', order = 'desc', author, topic) => {
