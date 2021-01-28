@@ -7,8 +7,51 @@ This server is my final project for the back-end module of the Northcoders Manch
 - /api/topics
 - /api/users
 
-The hosted version is available at the following link: https://claire-castanet-nc-news.herokuapp.com/
-The server is written in JavaScript (Node v15.2.0), built up with Express. The database uses SQL, and I used Knex as the query builder. The tests use Jest, Jest-sorted and Supertest. 
+My hosted version is available at the following link: https://claire-castanet-nc-news.herokuapp.com/
+The server is written in JavaScript (Node v15.2.0), built up with Express. The database uses SQL, and I used Knex as the query builder. The tests use Jest, Jest-sorted and Supertest.
+<br>
+<br>
+# Available endpoints & Methods:
+/api/articles/:articles
+<br>
+GET<br>
+DELETE <br>
+PATCH - (body: {inc_vote : number})
+<br>
+<br>
+/api/articles<br>
+GET - (queries: sort_by, order, author, topic)<br>
+POST - (body: {   username: "JaneDoe",<br>
+                name: "Claire",<br>
+                title: "How I got into coding",<br>
+                body: "'Tis a long story",<br>
+                topic: "Life stories",<br>
+                slug: 'code'})
+<br>
+<br>
+/api/articles/:article-id/comments<br>
+GET <br>
+POST - (body: { username: "username", body: "comment" })
+<br>
+<br>
+api/comments/:comments-id
+<br>
+PATCH - (body: { inc_votes: number }) 
+<br> 
+DELETE
+<br>
+<br>
+/api/users/:username
+<br>
+GET
+<br>
+<br>
+/api/topics
+<br>
+GET
+<br>
+
+
 <br>
 <br>
 # Set-up:
