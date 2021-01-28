@@ -193,6 +193,7 @@ git push heroku master
 - Choose `Heroku Postgres`
 <br>
 <br>
+
 6) Seed the production database online, then commit your changes, and push to heroku master.
 
 ```bash
