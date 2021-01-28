@@ -18,7 +18,8 @@ sudo snap install --classic heroku
 ```
 
 ## 2. Create a Heroku App
-
+<br>
+<br>
 Log into Heroku using their command line interface:
 
 ```bash
