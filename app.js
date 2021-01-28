@@ -12,9 +12,3 @@ app.use(handlesInvalidInput);
 app.use(handlesUnknownError)
 
 module.exports = app;
-
-// what remains to be done :
-
-//- I need to choose what to send back if the query sort_by is invalid [200, 400],
-//  either serving back an unpatched comment or throwing and error.
-// - I need to add a comments_count to a couple of functions that send back an article I think.
