@@ -11,6 +11,7 @@ My hosted version is available at the following link: https://claire-castanet-nc
 The server is written in JavaScript (Node v15.2.0), built up with Express. The database uses SQL, and I used Knex as the query builder. The tests use Jest, Jest-sorted and Supertest.
 <br>
 <br>
+
 # Available endpoints & Methods:
 /api/articles/:articles
 <br>
@@ -50,10 +51,8 @@ GET
 <br>
 GET
 <br>
-
-
 <br>
-<br>
+
 # Set-up:
 
 **1) Install dependencies:**
